@@ -1,0 +1,23 @@
+From 253c92599f12604b56b4f638ec84438885a610c4 Mon Sep 17 00:00:00 2001
+From: ITS Team <itsec-team@iaik.tugraz.at>
+Date: Wed, 12 Oct 2016 10:59:12 +0200
+Subject: [PATCH] Fix typo
+
+---
+ tls/ascon128.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tls/ascon128.cpp b/tls/ascon128.cpp
+index 9fc90ba..8ff1ba9 100644
+--- a/tls/ascon128.cpp
++++ b/tls/ascon128.cpp
+@@ -55,5 +55,5 @@ bool ascon128::decrypt(std::vector<uint8_t>& plaintext, const std::vector<uint8_
+ {
+   // \todo perform decryption with Ascon with given data. If decryption is
+   // successful return true, otherwise return false.
+-  return false.
++  return false;
+ }
+-- 
+2.7.4
+

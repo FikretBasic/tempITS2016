@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="CPP_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/tls/prf.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tls/ascon128.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tls/counter.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tls/sha2.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tls/hmac-sha2.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tls/CMakeLists.txt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tls/ascon/ascon.c" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tls/ascon128.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tls/tls-ascon.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tls/random.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tls/tests/nonce.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tls/tests/CMakeLists.txt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tls/tests/prf.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tls/tests/random.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tls/tests/ascon.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tls/tests/hmac_sha2.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tls/tests/tls_ascon.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tls/sha2.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tls/hmac-sha2.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tls/counter.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tls/tls-ascon.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tls/prf.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tls/random.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/doc/template.doxy.in" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/CMakeLists.txt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/cmake/run_with_stdin_pipe.sh" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/cmake/CheckCPUID.cmake" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/cmake/check-rdtscp.c" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/cmake/doxygenSupport.cmake" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/cmake/testing.cmake" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/cmake/FindCheck.cmake" isTestSource="false" />
+    </content>
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library name="Header Search Paths">
+        <CLASSES>
+          <root url="file:///usr/include" />
+          <root url="file:///usr/lib/gcc/x86_64-linux-gnu/4.9/include-fixed" />
+          <root url="file:///usr/lib/gcc/x86_64-linux-gnu/4.9/include" />
+          <root url="file:///usr/local/include" />
+        </CLASSES>
+        <SOURCES>
+          <root url="file:///usr/include" />
+          <root url="file:///usr/lib/gcc/x86_64-linux-gnu/4.9/include-fixed" />
+          <root url="file:///usr/lib/gcc/x86_64-linux-gnu/4.9/include" />
+          <root url="file:///usr/local/include" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+  </component>
+</module>

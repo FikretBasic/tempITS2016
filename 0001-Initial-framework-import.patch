@@ -1,0 +1,4751 @@
+From be5de917539b599fbd29eda5e2855246923bf927 Mon Sep 17 00:00:00 2001
+From: ITS Team <itsec-team@iaik.tugraz.at>
+Date: Mon, 10 Oct 2016 15:23:42 +0200
+Subject: [PATCH] Initial framework import
+
+---
+ .gitlab-ci.yml                        |   7 +
+ CMakeLists.txt                        |  78 +++++++++
+ FRAMEWORK-README.txt                  | 100 +++++++++++
+ LICENSE.txt                           |  21 +++
+ README.txt                            |   5 +
+ cmake/CheckCPUID.cmake                |  16 ++
+ cmake/FindCheck.cmake                 |  22 +++
+ cmake/check-rdtscp.c                  |  19 +++
+ cmake/doxygenSupport.cmake            |  63 +++++++
+ cmake/run_with_stdin_pipe.sh          |   7 +
+ cmake/testing.cmake                   |  46 +++++
+ doc/template.doxy.in                  | 295 ++++++++++++++++++++++++++++++++
+ open_apidoc.sh                        |  11 ++
+ run_cmake.sh                          |  42 +++++
+ tls/CMakeLists.txt                    |  21 +++
+ tls/ascon/LICENSE.txt                 | 119 +++++++++++++
+ tls/ascon/api.h                       |  10 ++
+ tls/ascon/ascon.c                     | 243 ++++++++++++++++++++++++++
+ tls/ascon/crypto_aead.h               |  41 +++++
+ tls/ascon128.cpp                      |  59 +++++++
+ tls/ascon128.h                        |  84 +++++++++
+ tls/basic-ae.h                        |  41 +++++
+ tls/basic-hash.h                      |  43 +++++
+ tls/counter.cpp                       |  36 ++++
+ tls/counter.h                         |  44 +++++
+ tls/endian.h                          | 131 ++++++++++++++
+ tls/hmac-sha2.cpp                     |  43 +++++
+ tls/hmac-sha2.h                       |  74 ++++++++
+ tls/misc.h                            |  42 +++++
+ tls/prf.cpp                           |  38 +++++
+ tls/prf.h                             |  45 +++++
+ tls/random.cpp                        |  32 ++++
+ tls/random.h                          |  37 ++++
+ tls/sha2.cpp                          | 151 +++++++++++++++++
+ tls/sha2.h                            |  95 +++++++++++
+ tls/tests/CMakeLists.txt              |  33 ++++
+ tls/tests/ascon.cpp                   | 174 +++++++++++++++++++
+ tls/tests/data/ascon-testcase-1.chal  | Bin 0 -> 155 bytes
+ tls/tests/data/ascon-testcase-1.sol   | Bin 0 -> 250 bytes
+ tls/tests/data/ascon-testcase-10.chal | Bin 0 -> 525 bytes
+ tls/tests/data/ascon-testcase-10.sol  | Bin 0 -> 620 bytes
+ tls/tests/data/ascon-testcase-11.chal | Bin 0 -> 540 bytes
+ tls/tests/data/ascon-testcase-11.sol  | Bin 0 -> 635 bytes
+ tls/tests/data/ascon-testcase-12.chal | Bin 0 -> 555 bytes
+ tls/tests/data/ascon-testcase-12.sol  | Bin 0 -> 650 bytes
+ tls/tests/data/ascon-testcase-13.chal | Bin 0 -> 560 bytes
+ tls/tests/data/ascon-testcase-13.sol  | Bin 0 -> 655 bytes
+ tls/tests/data/ascon-testcase-14.chal | Bin 0 -> 580 bytes
+ tls/tests/data/ascon-testcase-14.sol  | Bin 0 -> 675 bytes
+ tls/tests/data/ascon-testcase-15.chal |  22 +++
+ tls/tests/data/ascon-testcase-15.sol  | Bin 0 -> 1745 bytes
+ tls/tests/data/ascon-testcase-16.chal |  22 +++
+ tls/tests/data/ascon-testcase-16.sol  | Bin 0 -> 1785 bytes
+ tls/tests/data/ascon-testcase-17.chal |  30 ++++
+ tls/tests/data/ascon-testcase-17.sol  | Bin 0 -> 2500 bytes
+ tls/tests/data/ascon-testcase-18.chal |  33 ++++
+ tls/tests/data/ascon-testcase-18.sol  | Bin 0 -> 2515 bytes
+ tls/tests/data/ascon-testcase-19.chal | Bin 0 -> 3980 bytes
+ tls/tests/data/ascon-testcase-19.sol  | Bin 0 -> 4075 bytes
+ tls/tests/data/ascon-testcase-2.chal  | Bin 0 -> 165 bytes
+ tls/tests/data/ascon-testcase-2.sol   | Bin 0 -> 260 bytes
+ tls/tests/data/ascon-testcase-3.chal  | Bin 0 -> 235 bytes
+ tls/tests/data/ascon-testcase-3.sol   | Bin 0 -> 330 bytes
+ tls/tests/data/ascon-testcase-4.chal  | Bin 0 -> 250 bytes
+ tls/tests/data/ascon-testcase-4.sol   | Bin 0 -> 345 bytes
+ tls/tests/data/ascon-testcase-5.chal  | Bin 0 -> 265 bytes
+ tls/tests/data/ascon-testcase-5.sol   | Bin 0 -> 360 bytes
+ tls/tests/data/ascon-testcase-6.chal  | Bin 0 -> 310 bytes
+ tls/tests/data/ascon-testcase-6.sol   | Bin 0 -> 405 bytes
+ tls/tests/data/ascon-testcase-7.chal  | Bin 0 -> 365 bytes
+ tls/tests/data/ascon-testcase-7.sol   | Bin 0 -> 460 bytes
+ tls/tests/data/ascon-testcase-8.chal  | Bin 0 -> 405 bytes
+ tls/tests/data/ascon-testcase-8.sol   | Bin 0 -> 500 bytes
+ tls/tests/data/ascon-testcase-9.chal  | Bin 0 -> 445 bytes
+ tls/tests/data/ascon-testcase-9.sol   | Bin 0 -> 540 bytes
+ tls/tests/helpers.h                   |  97 +++++++++++
+ tls/tests/hmac_sha2.cpp               | 310 ++++++++++++++++++++++++++++++++++
+ tls/tests/nonce.cpp                   | 106 ++++++++++++
+ tls/tests/prf.cpp                     | 108 ++++++++++++
+ tls/tests/random.cpp                  |  76 +++++++++
+ tls/tests/tls_ascon.cpp               | 118 +++++++++++++
+ tls/tls-ascon.cpp                     |  70 ++++++++
+ tls/tls-ascon.h                       |  71 ++++++++
+ tls/tls.h                             |  43 +++++
+ 84 files changed, 3474 insertions(+)
+ create mode 100644 .gitlab-ci.yml
+ create mode 100644 CMakeLists.txt
+ create mode 100644 FRAMEWORK-README.txt
+ create mode 100644 LICENSE.txt
+ create mode 100644 README.txt
+ create mode 100644 cmake/CheckCPUID.cmake
+ create mode 100644 cmake/FindCheck.cmake
+ create mode 100644 cmake/check-rdtscp.c
+ create mode 100644 cmake/doxygenSupport.cmake
+ create mode 100755 cmake/run_with_stdin_pipe.sh
+ create mode 100644 cmake/testing.cmake
+ create mode 100644 doc/template.doxy.in
+ create mode 100755 open_apidoc.sh
+ create mode 100755 run_cmake.sh
+ create mode 100644 tls/CMakeLists.txt
+ create mode 100644 tls/ascon/LICENSE.txt
+ create mode 100644 tls/ascon/api.h
+ create mode 100644 tls/ascon/ascon.c
+ create mode 100644 tls/ascon/crypto_aead.h
+ create mode 100644 tls/ascon128.cpp
+ create mode 100644 tls/ascon128.h
+ create mode 100644 tls/basic-ae.h
+ create mode 100644 tls/basic-hash.h
+ create mode 100644 tls/counter.cpp
+ create mode 100644 tls/counter.h
+ create mode 100644 tls/endian.h
+ create mode 100644 tls/hmac-sha2.cpp
+ create mode 100644 tls/hmac-sha2.h
+ create mode 100644 tls/misc.h
+ create mode 100644 tls/prf.cpp
+ create mode 100644 tls/prf.h
+ create mode 100644 tls/random.cpp
+ create mode 100644 tls/random.h
+ create mode 100644 tls/sha2.cpp
+ create mode 100644 tls/sha2.h
+ create mode 100644 tls/tests/CMakeLists.txt
+ create mode 100644 tls/tests/ascon.cpp
+ create mode 100644 tls/tests/data/ascon-testcase-1.chal
+ create mode 100644 tls/tests/data/ascon-testcase-1.sol
+ create mode 100644 tls/tests/data/ascon-testcase-10.chal
+ create mode 100644 tls/tests/data/ascon-testcase-10.sol
+ create mode 100644 tls/tests/data/ascon-testcase-11.chal
+ create mode 100644 tls/tests/data/ascon-testcase-11.sol
+ create mode 100644 tls/tests/data/ascon-testcase-12.chal
+ create mode 100644 tls/tests/data/ascon-testcase-12.sol
+ create mode 100644 tls/tests/data/ascon-testcase-13.chal
+ create mode 100644 tls/tests/data/ascon-testcase-13.sol
+ create mode 100644 tls/tests/data/ascon-testcase-14.chal
+ create mode 100644 tls/tests/data/ascon-testcase-14.sol
+ create mode 100644 tls/tests/data/ascon-testcase-15.chal
+ create mode 100644 tls/tests/data/ascon-testcase-15.sol
+ create mode 100644 tls/tests/data/ascon-testcase-16.chal
+ create mode 100644 tls/tests/data/ascon-testcase-16.sol
+ create mode 100644 tls/tests/data/ascon-testcase-17.chal
+ create mode 100644 tls/tests/data/ascon-testcase-17.sol
+ create mode 100644 tls/tests/data/ascon-testcase-18.chal
+ create mode 100644 tls/tests/data/ascon-testcase-18.sol
+ create mode 100644 tls/tests/data/ascon-testcase-19.chal
+ create mode 100644 tls/tests/data/ascon-testcase-19.sol
+ create mode 100644 tls/tests/data/ascon-testcase-2.chal
+ create mode 100644 tls/tests/data/ascon-testcase-2.sol
+ create mode 100644 tls/tests/data/ascon-testcase-3.chal
+ create mode 100644 tls/tests/data/ascon-testcase-3.sol
+ create mode 100644 tls/tests/data/ascon-testcase-4.chal
+ create mode 100644 tls/tests/data/ascon-testcase-4.sol
+ create mode 100644 tls/tests/data/ascon-testcase-5.chal
+ create mode 100644 tls/tests/data/ascon-testcase-5.sol
+ create mode 100644 tls/tests/data/ascon-testcase-6.chal
+ create mode 100644 tls/tests/data/ascon-testcase-6.sol
+ create mode 100644 tls/tests/data/ascon-testcase-7.chal
+ create mode 100644 tls/tests/data/ascon-testcase-7.sol
+ create mode 100644 tls/tests/data/ascon-testcase-8.chal
+ create mode 100644 tls/tests/data/ascon-testcase-8.sol
+ create mode 100644 tls/tests/data/ascon-testcase-9.chal
+ create mode 100644 tls/tests/data/ascon-testcase-9.sol
+ create mode 100644 tls/tests/helpers.h
+ create mode 100644 tls/tests/hmac_sha2.cpp
+ create mode 100644 tls/tests/nonce.cpp
+ create mode 100644 tls/tests/prf.cpp
+ create mode 100644 tls/tests/random.cpp
+ create mode 100644 tls/tests/tls_ascon.cpp
+ create mode 100644 tls/tls-ascon.cpp
+ create mode 100644 tls/tls-ascon.h
+ create mode 100644 tls/tls.h
+
+diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
+new file mode 100644
+index 0000000..025b563
+--- /dev/null
++++ b/.gitlab-ci.yml
+@@ -0,0 +1,7 @@
++stages:
++  - test
++
++test:
++  stage: test
++  script:
++    - tutorssecret.sh
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+new file mode 100644
+index 0000000..9d8b65e
+--- /dev/null
++++ b/CMakeLists.txt
+@@ -0,0 +1,78 @@
++cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
++
++# cmake setup
++set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
++set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
++
++# general setup
++set(NUMBER_OF_GROUPS 66)
++set(GROUP_NUMBER "00")
++
++
++project(its2016 C CXX)
++
++if(NOT CMAKE_BUILD_TYPE)
++  set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING
++      "Choose the type of build." FORCE)
++endif()
++
++# doygen setup
++SET(DOXYGEN_CONFIG_IN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/doc/template.doxy.in")
++set(DEFAULT_DOXYGEN_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/doc")
++
++include(testing)
++include(doxygenSupport)
++include(CheckCPUID)
++include(CheckCCompilerFlag)
++include(CheckCXXCompilerFlag)
++include(FindCheck)
++
++# set required C and C++ standard version
++if(CMAKE_MAJOR_VERSION EQUAL 2 OR (CMAKE_MAJOR_VERSION EQUAL 3 AND CMAKE_MINOR_VERSION EQUAL 0))
++  # let's hope for the best
++  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
++  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
++else()
++  set(CMAKE_C_STANDARD 11)
++  set(CMAKE_CXX_STANDARD 11)
++  set(CMAKE_C_STANDARD_REQUIRED ON)
++  set(CMAKE_CXX_STANDARD_REQUIRED ON)
++endif()
++
++# check cpuid
++CheckCPUID()
++
++# check compiler flags
++foreach(flag IN ITEMS "-Wall" "-fdiagnostics-color=auto")
++  check_c_compiler_flag(${flag} CC_SUPPORTS_${flag})
++  check_cxx_compiler_flag(${flag} CXX_SUPPORTS_${flag})
++
++  if(CC_SUPPORTS_${flag})
++    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${flag}")
++  endif()
++  if(CXX_SUPPORTS_${flag})
++    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flag}")
++  endif()
++endforeach(flag)
++
++find_package(Check REQUIRED)
++
++# add aubdirectories
++add_subdirectory(tls)
++
++message(STATUS "---------------------------------------------------------------------")
++message(STATUS "Configuration for ${CMAKE_PROJECT_NAME} done.")
++message(STATUS "BUILD TYPE:        ${CMAKE_BUILD_TYPE}")
++message(STATUS "CC:                ${CMAKE_C_COMPILER}")
++message(STATUS "CXX:               ${CMAKE_CXX_COMPILER}")
++message(STATUS "CPU supports:")
++if(HAVE_CPU_RDTSCP)
++  message(STATUS "  RDTSCP")
++endif()
++message(STATUS "")
++message(STATUS "Available targets:")
++message(STATUS "  all...............Builds all programs.")
++message(STATUS "  suite.............Builds the test program.")
++message(STATUS "  check.............Runs the test program.")
++message(STATUS "  doxygen...........Build doxygen documentation.")
++message(STATUS "---------------------------------------------------------------------")
+diff --git a/FRAMEWORK-README.txt b/FRAMEWORK-README.txt
+new file mode 100644
+index 0000000..b803cf3
+--- /dev/null
++++ b/FRAMEWORK-README.txt
+@@ -0,0 +1,100 @@
++/*! \mainpage README
++    \verbatim
++===============================================================================
++                           IT Security Framework
++===============================================================================
++
++-------------------------------------------------------------------------------
++                              Dependencies
++-------------------------------------------------------------------------------
++
++* cmake >= 3.0
++* check
++* g++ >= 4.9
++
++-------------------------------------------------------------------------------
++                             Directory structure
++-------------------------------------------------------------------------------
++ROOT
++|-build...........................Files for building (Makefile).
++|-cmake...........................Modules for the CMake build system.
++|-doc.............................Contains a doxygen template.
++|-tls.............................Sources for the TLS tasks
++|-blockhain.......................Sources for the blockchain task
++
++-------------------------------------------------------------------------------
++                           Building the Framework
++-------------------------------------------------------------------------------
++The framework uses a CMake powered build system. The building process using
++this system consist of two steps. In the first one the build is configured
++using CMake. The actual building is done in the second step using the
++generated build tool. On Linux systems this build tool is usually make.
++
++Configuring the project using CMake:
++------------------------------------
++Call "./run_cmake.sh clean" to clean the cmake build.
++Call "./run_cmake.sh build Debug" to build the framework with debug constants.
++Call "./run_cmake.sh build Release" to build the framework.
++
++Note: Each changes to the source tree or the CMakeLists.txt file needs a new
++      invocation of ./run_cmake.sh build. Some changes also require a full clean!
++
++Per default
++
++To modify the configuration you can either specify the needed parameters on the
++command line while calling cmake (-D), or use a graphical configuration tool
++like ccmake and cmake-gui.
++
++An usage hint of the most useful make targets are displayed at the end of the
++cmake execution.
++
++Most important build targets:
++-----------------------------
++   all...............Builds all programs and libraries.
++   suite.............Builds the test program.
++   check.............Runs the test program.
++   doxygen...........Builds doxygen documentation.
++
++Building the project:
++---------------------
++After the configuration step you simply start the build in the generated build
++system specific way. ("make" when using Makefiles, opening the project file
++when using Visual Studio, ...)
++
++###############################################################################
++Example for Linux: (building the test suite using Makefiles)
++ $ make suite
++###############################################################################
++
++-------------------------------------------------------------------------------
++                       Running the Tests and Assignments
++-------------------------------------------------------------------------------
++As soon as the build step is finished the binaries can be found in
++subdirectories of "<buildDir>".
++
++Running the test suite:
++-----------------------
++To run the test suite simply run "make check" in the build directory. By
++default, only a summary of the results is displayed. The full output of the test
++programs can be found in the "LastTest.log" files, which are usually located in 
++"<buildDir>/Testing/Temporary/".
++
++Running attack programs:
++-------------------------------------------------------------------------------
++Executing these attack programs is quite similar to the executing of a test
++program. Simply run the desired attack and provide the challenge data file
++and/or the desired attack method as command line parameter.
++Executing the test programs without a parameter will print out usage help.
++When the attack is successful, the result is automatically written to disk
++next to the challenge file or in a provided result folder (.res or
++.sol suffix).
++
++###############################################################################
++Example for Linux: (Run attack on random number generators)
++ $ cd <buildDir>
++ $ make
++ $ make tls_local_tsc # run the attack
++###############################################################################
++
++  \endverbatim
++*/
+diff --git a/LICENSE.txt b/LICENSE.txt
+new file mode 100644
+index 0000000..c90875e
+--- /dev/null
++++ b/LICENSE.txt
+@@ -0,0 +1,21 @@
++Copyright (C) 2016 Graz University of Technology
++
++Contact: itsec-team@iaik.tugraz.at
++
++IT-SECURITY LICENSE
++Version 1.1, 12th of March 2016
++
++This framework may only be used within the IT-Security exercises 2016. Only
++students that are formally registered within TUGRAZ-online may use it until 30th
++of June 2016. After that date, licensees have the duty to safely delete the
++software framework.
++
++This license does not grant you any rights to re-distribute the software, to
++change the license, to grant access to other individuals, and to commercially
++use the software.
++
++This software is distributed WITHOUT ANY WARRANTY; without even the implied
++warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++
++If you are interested in a more reasonable license, please use the contact
++information above.
+diff --git a/README.txt b/README.txt
+new file mode 100644
+index 0000000..37e9341
+--- /dev/null
++++ b/README.txt
+@@ -0,0 +1,5 @@
++TODO: describe your solution and design decisions here
++
++For every assignment:
++* If everything is working, you are done within one sentence saying so.
++* If parts are missing/failing, list them here.
+diff --git a/cmake/CheckCPUID.cmake b/cmake/CheckCPUID.cmake
+new file mode 100644
+index 0000000..5a177fe
+--- /dev/null
++++ b/cmake/CheckCPUID.cmake
+@@ -0,0 +1,16 @@
++set(DIR_OF_THIS ${CMAKE_CURRENT_LIST_DIR})
++
++macro(CheckCPUID)
++
++try_run(CPUID_RDTSCP_FLAG CPUID_COMPILE_RESULT
++        ${CMAKE_BINARY_DIR}
++        ${DIR_OF_THIS}/check-rdtscp.c)
++if(${CPUID_COMPILE_RESULT} AND ${CPUID_RDTSCP_FLAG} EQUAL 0)
++  set(HAVE_CPU_RDTSCP true CACHE BOOL "RDTSCP instruction available on host.")
++else()
++  set(HAVE_CPU_RDTSCP false CACHE BOOL "RDTSCP instruction available on host.")
++endif()
++
++mark_as_advanced(HAVE_CPU_RDTSCP)
++
++endmacro(CheckCPUID)
+diff --git a/cmake/FindCheck.cmake b/cmake/FindCheck.cmake
+new file mode 100644
+index 0000000..ca353e5
+--- /dev/null
++++ b/cmake/FindCheck.cmake
+@@ -0,0 +1,22 @@
++# - Try to find Check
++# Once done this will define
++#  CHECK_FOUND - System has check
++#  CHECK_INCLUDE_DIRS - The check include directories
++#  CHECK_LIBRARIES - The libraries needed to use check
++#  CHECK_DEFINITIONS - Compiler switches required for using check
++
++find_package(PkgConfig REQUIRED)
++pkg_check_modules(PC_CHECK QUIET check)
++
++include(FindPackageHandleStandardArgs)
++# handle the QUIETLY and REQUIRED arguments and set CHECK_FOUND to TRUE
++# if all listed variables are TRUE
++find_package_handle_standard_args(Check DEFAULT_MSG
++                                  PC_CHECK_LIBRARIES)
++
++mark_as_advanced(CHECK_INCLUDE_DIR CHECK_LIBRARY)
++
++set(CHECK_DEFINITIONS ${PC_CHECK_CFLAGS_OTHER})
++set(CHECK_INCLUDE_DIRS ${PC_CHECK_INCLUDE_DIRS})
++set(CHECK_LIBRARY_DIRS ${PC_CHECK_LIBRARY_DIRS})
++set(CHECK_LIBRARIES ${PC_CHECK_LIBRARIES})
+diff --git a/cmake/check-rdtscp.c b/cmake/check-rdtscp.c
+new file mode 100644
+index 0000000..de507e4
+--- /dev/null
++++ b/cmake/check-rdtscp.c
+@@ -0,0 +1,19 @@
++#include <cpuid.h>
++#include <stdint.h>
++
++#define bit_RDTSCP (1 << 27)
++
++int main()
++{
++  uint32_t eax, ebx, ecx, edx;
++  /* call cpuid to check if RDTSCP instructions are available */
++  if (__get_cpuid(0x80000001, &eax, &ebx, &ecx, &edx))
++  {
++    if (edx & bit_RDTSCP)
++    {
++      return 0;
++    }
++  }
++
++  return 1;
++}
+diff --git a/cmake/doxygenSupport.cmake b/cmake/doxygenSupport.cmake
+new file mode 100644
+index 0000000..5412919
+--- /dev/null
++++ b/cmake/doxygenSupport.cmake
+@@ -0,0 +1,63 @@
++# This script discovers the Doxygen binary and creates a doxygen target when
++# binary and configuration file could be found.
++#
++# The following variables can be used to customize the function:
++#   DOXYGEN_CONFIG_IN_FILE................(mandatory) path to the config file
++#   DEFAULT_DOXYGEN_OUTPUT_DIR............custom output directory for the documentation
++#
++# As feedback if the target is available the DOXYGEN_GENERATION_POSSIBLE variable
++# is set.
++#
++
++FIND_PACKAGE(Doxygen)
++SET(DOXYFILE_FOUND false)
++SET( DOXYGEN_GENERATION_POSSIBLE 0)
++
++IF(EXISTS ${DOXYGEN_CONFIG_IN_FILE} )
++  SET(DOXYFILE_FOUND true)
++ENDIF(EXISTS ${DOXYGEN_CONFIG_IN_FILE} )
++
++FIND_PROGRAM(QHC_EXECUTABLE qhelpgenerator)
++MARK_AS_ADVANCED(QHC_EXECUTABLE)
++
++IF( DOXYGEN_FOUND )
++  IF( DOXYFILE_FOUND )
++    SET( DOXYGEN_GENERATION_POSSIBLE 1)
++
++    # configure default output directory
++    IF(NOT DEFAULT_DOXYGEN_OUTPUT_DIR)
++      SET(DEFAULT_DOXYGEN_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/_doxygen")
++    ENDIF(NOT DEFAULT_DOXYGEN_OUTPUT_DIR)
++
++    IF(NOT DOXYGEN_OUTPUT_DIR AND DEFAULT_DOXYGEN_OUTPUT_DIR)
++      SET(DOXYGEN_OUTPUT_DIR "${DEFAULT_DOXYGEN_OUTPUT_DIR}"
++        CACHE PATH "Output directory for the generated doxygen documentation.")
++    ENDIF(NOT DOXYGEN_OUTPUT_DIR AND DEFAULT_DOXYGEN_OUTPUT_DIR)
++
++    SET_PROPERTY(
++      DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
++      APPEND
++      PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${DOXYGEN_OUTPUT_DIR}"
++    )
++
++    IF(QHC_EXECUTABLE)
++        SET(CMAKE_QHC_ENABLE "YES")
++        SET(CMAKE_QHC_OUTPUT_FILE "${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}.qch")
++        SET(CMAKE_QHC_LOCATION "${QHC_EXECUTABLE}")
++    ENDIF(QHC_EXECUTABLE)
++
++    CONFIGURE_FILE(
++      "${DOXYGEN_CONFIG_IN_FILE}"
++      "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_PROJECT_NAME}.doxygen"
++      IMMEDIATE @ONLY)
++
++    # Add target
++    ADD_CUSTOM_TARGET(doxygen ${DOXYGEN_EXECUTABLE} "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_PROJECT_NAME}.doxygen")
++
++  ELSE( DOXYFILE_FOUND )
++    MESSAGE( STATUS "Doxygen configuration file (${DOXYGEN_CONFIG_IN_FILE}) not found." )
++    MESSAGE( STATUS "Documentation target will not be added!" )
++  ENDIF( DOXYFILE_FOUND )
++ELSE( DOXYGEN_FOUND )
++  MESSAGE( STATUS "Doxygen not found. Documentation can not be generated!" )
++ENDIF( DOXYGEN_FOUND )
+diff --git a/cmake/run_with_stdin_pipe.sh b/cmake/run_with_stdin_pipe.sh
+new file mode 100755
+index 0000000..3b39347
+--- /dev/null
++++ b/cmake/run_with_stdin_pipe.sh
+@@ -0,0 +1,7 @@
++#!/bin/sh
++
++# Expected Parameters:
++# $1 program to run
++# $2 file which should be piped into stdin
++
++exec "$1" < "$2"
+diff --git a/cmake/testing.cmake b/cmake/testing.cmake
+new file mode 100644
+index 0000000..74a8aec
+--- /dev/null
++++ b/cmake/testing.cmake
+@@ -0,0 +1,46 @@
++# This script provides suite and check targets to simplify testing.
++#
++# Provided targets:
++#   suite.............metatarget for building the test suite
++#   check.............build and run the test suite
++#
++# Provided macros/functions:
++#   add_to_suite(target)....................add target to the test suite
++#                                           as build dependency
++#   add_stdin_test(name target stdinfile)...add a test which expects that a file
++#                                           is piped in via stdin
++#
++
++# enable the ctest support
++enable_testing()
++
++# add suite target which is used as meta target for building the tests
++IF(NOT TARGET "suite")
++  add_custom_target("suite")
++ENDIF()
++
++# adds an arbitrary target to the test suite as building dependency
++macro(add_to_suite target)
++  add_dependencies("suite" ${target})
++endmacro()
++
++# add check command which calls ctest
++# it additionally depends on the suite target to build the test cases
++IF(NOT TARGET "check")
++  add_custom_target("check" COMMAND ${CMAKE_CTEST_COMMAND}
++                            WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
++                            COMMENT "Executing test suite.")
++  add_dependencies("check" "suite")
++ENDIF()
++
++
++# copy the helper script into the build directory
++configure_file("${CMAKE_SOURCE_DIR}/cmake/run_with_stdin_pipe.sh"
++               "${CMAKE_BINARY_DIR}/run_with_stdin_pipe.sh" COPYONLY)
++
++# adds a test with a file for stdin
++macro(add_stdin_test name target stdinfile)
++  add_test(NAME "${name}"
++           COMMAND "${CMAKE_BINARY_DIR}/run_with_stdin_pipe.sh"
++                   $<TARGET_FILE:${target}> "${stdinfile}")
++endmacro()
+diff --git a/doc/template.doxy.in b/doc/template.doxy.in
+new file mode 100644
+index 0000000..2f2a0f2
+--- /dev/null
++++ b/doc/template.doxy.in
+@@ -0,0 +1,295 @@
++DOXYFILE_ENCODING      = UTF-8
++PROJECT_NAME           = ITS_2016
++PROJECT_NUMBER         = @VERSION_STRING@
++PROJECT_BRIEF          = "ITS 2016 Framework"
++PROJECT_LOGO           = 
++OUTPUT_DIRECTORY       = @DOXYGEN_OUTPUT_DIR@
++CREATE_SUBDIRS         = YES
++OUTPUT_LANGUAGE        = English
++BRIEF_MEMBER_DESC      = YES
++REPEAT_BRIEF           = YES
++ABBREVIATE_BRIEF       = "The $name class" \
++                         "The $name widget" \
++                         "The $name file" \
++                         is \
++                         provides \
++                         specifies \
++                         contains \
++                         represents \
++                         a \
++                         an \
++                         the
++ALWAYS_DETAILED_SEC    = NO
++INLINE_INHERITED_MEMB  = NO
++FULL_PATH_NAMES        = YES
++STRIP_FROM_PATH        = @CMAKE_CURRENT_SOURCE_DIR@
++STRIP_FROM_INC_PATH    = 
++SHORT_NAMES            = NO
++JAVADOC_AUTOBRIEF      = NO
++QT_AUTOBRIEF           = NO
++MULTILINE_CPP_IS_BRIEF = NO
++INHERIT_DOCS           = YES
++SEPARATE_MEMBER_PAGES  = NO
++TAB_SIZE               = 2
++ALIASES                = 
++TCL_SUBST              = 
++OPTIMIZE_OUTPUT_FOR_C  = YES
++OPTIMIZE_OUTPUT_JAVA   = NO
++OPTIMIZE_FOR_FORTRAN   = NO
++OPTIMIZE_OUTPUT_VHDL   = NO
++EXTENSION_MAPPING      = 
++MARKDOWN_SUPPORT       = YES
++AUTOLINK_SUPPORT       = YES
++BUILTIN_STL_SUPPORT    = YES
++CPP_CLI_SUPPORT        = NO
++SIP_SUPPORT            = NO
++IDL_PROPERTY_SUPPORT   = YES
++DISTRIBUTE_GROUP_DOC   = NO
++SUBGROUPING            = YES
++INLINE_GROUPED_CLASSES = NO
++INLINE_SIMPLE_STRUCTS  = NO
++TYPEDEF_HIDES_STRUCT   = NO
++LOOKUP_CACHE_SIZE      = 0
++EXTRACT_ALL            = YES
++EXTRACT_PRIVATE        = YES
++EXTRACT_PACKAGE        = NO
++EXTRACT_STATIC         = YES
++EXTRACT_LOCAL_CLASSES  = YES
++EXTRACT_LOCAL_METHODS  = YES
++EXTRACT_ANON_NSPACES   = YES
++HIDE_UNDOC_MEMBERS     = NO
++HIDE_UNDOC_CLASSES     = NO
++HIDE_FRIEND_COMPOUNDS  = NO
++HIDE_IN_BODY_DOCS      = NO
++INTERNAL_DOCS          = NO
++CASE_SENSE_NAMES       = NO
++HIDE_SCOPE_NAMES       = YES
++SHOW_INCLUDE_FILES     = YES
++SHOW_GROUPED_MEMB_INC  = NO
++FORCE_LOCAL_INCLUDES   = NO
++INLINE_INFO            = YES
++SORT_MEMBER_DOCS       = YES
++SORT_BRIEF_DOCS        = NO
++SORT_MEMBERS_CTORS_1ST = NO
++SORT_GROUP_NAMES       = NO
++SORT_BY_SCOPE_NAME     = NO
++STRICT_PROTO_MATCHING  = NO
++GENERATE_TODOLIST      = YES
++GENERATE_TESTLIST      = YES
++GENERATE_BUGLIST       = YES
++GENERATE_DEPRECATEDLIST= YES
++ENABLED_SECTIONS       = 
++MAX_INITIALIZER_LINES  = 30
++SHOW_USED_FILES        = YES
++SHOW_FILES             = YES
++SHOW_NAMESPACES        = YES
++FILE_VERSION_FILTER    = 
++LAYOUT_FILE            = 
++CITE_BIB_FILES         = 
++QUIET                  = NO
++WARNINGS               = YES
++WARN_IF_UNDOCUMENTED   = YES
++WARN_IF_DOC_ERROR      = YES
++WARN_NO_PARAMDOC       = YES
++WARN_FORMAT            = "$file:$line: $text"
++WARN_LOGFILE           = 
++INPUT                  = "@CMAKE_CURRENT_SOURCE_DIR@"
++INPUT_ENCODING         = UTF-8
++FILE_PATTERNS          = *.c \
++                         *.cc \
++                         *.cxx \
++                         *.cpp \
++                         *.c++ \
++                         *.d \
++                         *.java \
++                         *.ii \
++                         *.ixx \
++                         *.ipp \
++                         *.i++ \
++                         *.inl \
++                         *.h \
++                         *.hh \
++                         *.hxx \
++                         *.hpp \
++                         *.h++ \
++                         *.idl \
++                         *.odl \
++                         *.cs \
++                         *.php \
++                         *.php3 \
++                         *.inc \
++                         *.mm \
++                         *.dox \
++                         *.py \
++                         *.f90 \
++                         *.f \
++                         *.vhd \
++                         *.vhdl
++RECURSIVE              = YES
++EXCLUDE                = @PROJECT_BINARY_DIR@
++EXCLUDE_SYMLINKS       = NO
++EXCLUDE_PATTERNS       = */CMakeFiles/* \
++                         */cmake/* \
++                         */test* \
++                         *.cmake
++EXCLUDE_SYMBOLS        = 
++EXAMPLE_PATH           = 
++EXAMPLE_PATTERNS       = *
++EXAMPLE_RECURSIVE      = NO
++IMAGE_PATH             = 
++INPUT_FILTER           = 
++FILTER_PATTERNS        = 
++FILTER_SOURCE_FILES    = NO
++FILTER_SOURCE_PATTERNS = 
++USE_MDFILE_AS_MAINPAGE = 
++SOURCE_BROWSER         = YES
++INLINE_SOURCES         = NO
++STRIP_CODE_COMMENTS    = YES
++REFERENCED_BY_RELATION = YES
++REFERENCES_RELATION    = YES
++REFERENCES_LINK_SOURCE = YES
++SOURCE_TOOLTIPS        = YES
++USE_HTAGS              = NO
++VERBATIM_HEADERS       = YES
++ALPHABETICAL_INDEX     = YES
++COLS_IN_ALPHA_INDEX    = 5
++IGNORE_PREFIX          = 
++GENERATE_HTML          = YES
++HTML_OUTPUT            = .
++HTML_FILE_EXTENSION    = .html
++HTML_HEADER            = 
++HTML_FOOTER            = 
++HTML_STYLESHEET        = 
++HTML_EXTRA_STYLESHEET  = 
++HTML_EXTRA_FILES       = 
++HTML_COLORSTYLE_HUE    = 220
++HTML_COLORSTYLE_SAT    = 100
++HTML_COLORSTYLE_GAMMA  = 80
++HTML_TIMESTAMP         = YES
++HTML_DYNAMIC_SECTIONS  = YES
++HTML_INDEX_NUM_ENTRIES = 100
++GENERATE_DOCSET        = NO
++DOCSET_FEEDNAME        = "Doxygen generated docs"
++DOCSET_BUNDLE_ID       = org.doxygen.Project
++DOCSET_PUBLISHER_ID    = org.doxygen.Publisher
++DOCSET_PUBLISHER_NAME  = Publisher
++GENERATE_HTMLHELP      = NO
++CHM_FILE               = 
++HHC_LOCATION           = 
++GENERATE_CHI           = NO
++CHM_INDEX_ENCODING     = 
++BINARY_TOC             = NO
++TOC_EXPAND             = NO
++GENERATE_QHP           = NO
++QCH_FILE               = @CMAKE_QHC_OUTPUT_FILE@
++QHP_NAMESPACE          = @CMAKE_PROJECT_NAME@
++QHP_VIRTUAL_FOLDER     = doc
++QHP_CUST_FILTER_NAME   = 
++QHP_CUST_FILTER_ATTRS  = 
++QHP_SECT_FILTER_ATTRS  = 
++QHG_LOCATION           = @CMAKE_QHC_LOCATION@
++GENERATE_ECLIPSEHELP   = NO
++ECLIPSE_DOC_ID         = org.doxygen.Project
++DISABLE_INDEX          = NO
++GENERATE_TREEVIEW      = YES
++ENUM_VALUES_PER_LINE   = 4
++TREEVIEW_WIDTH         = 250
++EXT_LINKS_IN_WINDOW    = NO
++FORMULA_FONTSIZE       = 10
++FORMULA_TRANSPARENT    = YES
++USE_MATHJAX            = NO
++MATHJAX_FORMAT         = HTML-CSS
++MATHJAX_RELPATH        = http://www.mathjax.org/mathjax
++MATHJAX_EXTENSIONS     = 
++MATHJAX_CODEFILE       = 
++SEARCHENGINE           = YES
++SERVER_BASED_SEARCH    = NO
++EXTERNAL_SEARCH        = NO
++SEARCHENGINE_URL       = 
++SEARCHDATA_FILE        = searchdata.xml
++EXTERNAL_SEARCH_ID     = 
++EXTRA_SEARCH_MAPPINGS  = 
++GENERATE_LATEX         = NO
++LATEX_OUTPUT           = latex
++LATEX_CMD_NAME         = latex
++MAKEINDEX_CMD_NAME     = makeindex
++COMPACT_LATEX          = NO
++PAPER_TYPE             = a4wide
++EXTRA_PACKAGES         = 
++LATEX_HEADER           = 
++LATEX_FOOTER           = 
++LATEX_EXTRA_FILES      = 
++PDF_HYPERLINKS         = YES
++USE_PDFLATEX           = YES
++LATEX_BATCHMODE        = NO
++LATEX_HIDE_INDICES     = NO
++LATEX_SOURCE_CODE      = NO
++LATEX_BIB_STYLE        = plain
++GENERATE_RTF           = NO
++RTF_OUTPUT             = rtf
++COMPACT_RTF            = NO
++RTF_HYPERLINKS         = NO
++RTF_STYLESHEET_FILE    = 
++RTF_EXTENSIONS_FILE    = 
++GENERATE_MAN           = NO
++MAN_OUTPUT             = man
++MAN_EXTENSION          = .3
++MAN_LINKS              = NO
++GENERATE_XML           = NO
++XML_OUTPUT             = xml
++XML_PROGRAMLISTING     = YES
++GENERATE_DOCBOOK       = NO
++DOCBOOK_OUTPUT         = docbook
++GENERATE_AUTOGEN_DEF   = NO
++GENERATE_PERLMOD       = NO
++PERLMOD_LATEX          = NO
++PERLMOD_PRETTY         = YES
++PERLMOD_MAKEVAR_PREFIX = 
++ENABLE_PREPROCESSING   = YES
++MACRO_EXPANSION        = NO
++EXPAND_ONLY_PREDEF     = NO
++SEARCH_INCLUDES        = YES
++INCLUDE_PATH           = 
++INCLUDE_FILE_PATTERNS  = 
++PREDEFINED             = 
++EXPAND_AS_DEFINED      = 
++SKIP_FUNCTION_MACROS   = YES
++TAGFILES               = 
++GENERATE_TAGFILE       = 
++ALLEXTERNALS           = NO
++EXTERNAL_GROUPS        = YES
++EXTERNAL_PAGES         = YES
++PERL_PATH              = /usr/bin/perl
++CLASS_DIAGRAMS         = NO
++MSCGEN_PATH            = 
++DIA_PATH               = 
++HIDE_UNDOC_RELATIONS   = YES
++HAVE_DOT               = NO
++DOT_NUM_THREADS        = 0
++DOT_FONTNAME           =
++DOT_FONTSIZE           = 10
++DOT_FONTPATH           = 
++CLASS_GRAPH            = YES
++COLLABORATION_GRAPH    = YES
++GROUP_GRAPHS           = YES
++UML_LOOK               = NO
++UML_LIMIT_NUM_FIELDS   = 10
++TEMPLATE_RELATIONS     = YES
++INCLUDE_GRAPH          = YES
++INCLUDED_BY_GRAPH      = YES
++CALL_GRAPH             = YES
++CALLER_GRAPH           = YES
++GRAPHICAL_HIERARCHY    = YES
++DIRECTORY_GRAPH        = YES
++DOT_IMAGE_FORMAT       = svg
++INTERACTIVE_SVG        = YES
++DOT_PATH               = @DOXYGEN_DOT_EXECUTABLE@
++DOTFILE_DIRS           = 
++MSCFILE_DIRS           = 
++DIAFILE_DIRS           = 
++DOT_GRAPH_MAX_NODES    = 100
++MAX_DOT_GRAPH_DEPTH    = 0
++DOT_TRANSPARENT        = YES
++DOT_MULTI_TARGETS      = YES
++GENERATE_LEGEND        = YES
++DOT_CLEANUP            = YES
+diff --git a/open_apidoc.sh b/open_apidoc.sh
+new file mode 100755
+index 0000000..151d9cb
+--- /dev/null
++++ b/open_apidoc.sh
+@@ -0,0 +1,11 @@
++#!/bin/bash
++set -e
++
++if [[ ! -d build/_doxygen ]]; then
++    if [[ ! -f build/Makefile ]]; then
++        ./run_cmake.sh build
++    fi
++    make -C doxygen
++fi
++
++xdg-open build/_doxygen/index.html
+diff --git a/run_cmake.sh b/run_cmake.sh
+new file mode 100755
+index 0000000..bacbad5
+--- /dev/null
++++ b/run_cmake.sh
+@@ -0,0 +1,42 @@
++#!/bin/bash
++
++# Location of CMakeLists.txt file
++CMAKE_LOC=..
++
++# Location of cmake build
++CMAKE_BUILD=build
++
++help() {
++  echo "No or invalid arguments supplied!";
++  echo "Help";
++  echo "====";
++  echo "Setup cmake build by calling:";
++  echo "$0 build         # (re)run cmake build ${BUILD_TYPE}";
++  echo "$0 build Debug   # (re)run cmake build Debug version";
++  echo "$0 build Release # (re)run cmake build Release version";
++  echo "$0 clean         # clean cmake build";
++}
++
++if [ $# -eq 0 ]; then
++  help;
++  exit 1;
++fi
++
++if [ "$1" = "build" ]; then
++  mkdir -p ${CMAKE_BUILD};
++  cd ${CMAKE_BUILD};
++  if [ $# -eq 2 ]; then
++    cmake -DCMAKE_BUILD_TYPE=$2 ${CMAKE_LOC};
++  else
++    cmake ${CMAKE_LOC};
++  fi
++  exit 0;
++fi
++
++if [ "$1" = "clean" ]; then
++  rm --force -r ${CMAKE_BUILD};
++  exit 0;
++fi
++
++help
++exit 1;
+diff --git a/tls/CMakeLists.txt b/tls/CMakeLists.txt
+new file mode 100644
+index 0000000..2cf406f
+--- /dev/null
++++ b/tls/CMakeLists.txt
+@@ -0,0 +1,21 @@
++set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
++find_package(Threads)
++
++if(CMAKE_USE_PTHREADS_INIT)
++  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread")
++  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
++endif()
++
++set(PRIMITIVES_SOURCES
++    ascon/ascon.c
++    ascon128.cpp
++    counter.cpp
++    hmac-sha2.cpp
++    prf.cpp
++    random.cpp
++    sha2.cpp
++    tls-ascon.cpp)
++
++add_library(primitives SHARED ${PRIMITIVES_SOURCES})
++
++add_subdirectory(tests)
+diff --git a/tls/ascon/LICENSE.txt b/tls/ascon/LICENSE.txt
+new file mode 100644
+index 0000000..790e9e3
+--- /dev/null
++++ b/tls/ascon/LICENSE.txt
+@@ -0,0 +1,119 @@
++This folder contains the Ascon 1.2 reference code taken from
++https://github.com/ascon/crypto_aead and is licensed under CC-0:
++
++CC0 1.0 Universal
++
++Statement of Purpose
++
++The laws of most jurisdictions throughout the world automatically confer
++exclusive Copyright and Related Rights (defined below) upon the creator and
++subsequent owner(s) (each and all, an "owner") of an original work of
++authorship and/or a database (each, a "Work").
++
++Certain owners wish to permanently relinquish those rights to a Work for the
++purpose of contributing to a commons of creative, cultural and scientific
++works ("Commons") that the public can reliably and without fear of later
++claims of infringement build upon, modify, incorporate in other works, reuse
++and redistribute as freely as possible in any form whatsoever and for any
++purposes, including without limitation commercial purposes. These owners may
++contribute to the Commons to promote the ideal of a free culture and the
++further production of creative, cultural and scientific works, or to gain
++reputation or greater distribution for their Work in part through the use and
++efforts of others.
++
++For these and/or other purposes and motivations, and without any expectation
++of additional consideration or compensation, the person associating CC0 with a
++Work (the "Affirmer"), to the extent that he or she is an owner of Copyright
++and Related Rights in the Work, voluntarily elects to apply CC0 to the Work
++and publicly distribute the Work under its terms, with knowledge of his or her
++Copyright and Related Rights in the Work and the meaning and intended legal
++effect of CC0 on those rights.
++
++1. Copyright and Related Rights. A Work made available under CC0 may be
++protected by copyright and related or neighboring rights ("Copyright and
++Related Rights"). Copyright and Related Rights include, but are not limited
++to, the following:
++
++  i. the right to reproduce, adapt, distribute, perform, display, communicate,
++  and translate a Work;
++
++  ii. moral rights retained by the original author(s) and/or performer(s);
++
++  iii. publicity and privacy rights pertaining to a person's image or likeness
++  depicted in a Work;
++
++  iv. rights protecting against unfair competition in regards to a Work,
++  subject to the limitations in paragraph 4(a), below;
++
++  v. rights protecting the extraction, dissemination, use and reuse of data in
++  a Work;
++
++  vi. database rights (such as those arising under Directive 96/9/EC of the
++  European Parliament and of the Council of 11 March 1996 on the legal
++  protection of databases, and under any national implementation thereof,
++  including any amended or successor version of such directive); and
++
++  vii. other similar, equivalent or corresponding rights throughout the world
++  based on applicable law or treaty, and any national implementations thereof.
++
++2. Waiver. To the greatest extent permitted by, but not in contravention of,
++applicable law, Affirmer hereby overtly, fully, permanently, irrevocably and
++unconditionally waives, abandons, and surrenders all of Affirmer's Copyright
++and Related Rights and associated claims and causes of action, whether now
++known or unknown (including existing as well as future claims and causes of
++action), in the Work (i) in all territories worldwide, (ii) for the maximum
++duration provided by applicable law or treaty (including future time
++extensions), (iii) in any current or future medium and for any number of
++copies, and (iv) for any purpose whatsoever, including without limitation
++commercial, advertising or promotional purposes (the "Waiver"). Affirmer makes
++the Waiver for the benefit of each member of the public at large and to the
++detriment of Affirmer's heirs and successors, fully intending that such Waiver
++shall not be subject to revocation, rescission, cancellation, termination, or
++any other legal or equitable action to disrupt the quiet enjoyment of the Work
++by the public as contemplated by Affirmer's express Statement of Purpose.
++
++3. Public License Fallback. Should any part of the Waiver for any reason be
++judged legally invalid or ineffective under applicable law, then the Waiver
++shall be preserved to the maximum extent permitted taking into account
++Affirmer's express Statement of Purpose. In addition, to the extent the Waiver
++is so judged Affirmer hereby grants to each affected person a royalty-free,
++non transferable, non sublicensable, non exclusive, irrevocable and
++unconditional license to exercise Affirmer's Copyright and Related Rights in
++the Work (i) in all territories worldwide, (ii) for the maximum duration
++provided by applicable law or treaty (including future time extensions), (iii)
++in any current or future medium and for any number of copies, and (iv) for any
++purpose whatsoever, including without limitation commercial, advertising or
++promotional purposes (the "License"). The License shall be deemed effective as
++of the date CC0 was applied by Affirmer to the Work. Should any part of the
++License for any reason be judged legally invalid or ineffective under
++applicable law, such partial invalidity or ineffectiveness shall not
++invalidate the remainder of the License, and in such case Affirmer hereby
++affirms that he or she will not (i) exercise any of his or her remaining
++Copyright and Related Rights in the Work or (ii) assert any associated claims
++and causes of action with respect to the Work, in either case contrary to
++Affirmer's express Statement of Purpose.
++
++4. Limitations and Disclaimers.
++
++  a. No trademark or patent rights held by Affirmer are waived, abandoned,
++  surrendered, licensed or otherwise affected by this document.
++
++  b. Affirmer offers the Work as-is and makes no representations or warranties
++  of any kind concerning the Work, express, implied, statutory or otherwise,
++  including without limitation warranties of title, merchantability, fitness
++  for a particular purpose, non infringement, or the absence of latent or
++  other defects, accuracy, or the present or absence of errors, whether or not
++  discoverable, all to the greatest extent permissible under applicable law.
++
++  c. Affirmer disclaims responsibility for clearing rights of other persons
++  that may apply to the Work or any use thereof, including without limitation
++  any person's Copyright and Related Rights in the Work. Further, Affirmer
++  disclaims responsibility for obtaining any necessary consents, permissions
++  or other rights required for any use of the Work.
++
++  d. Affirmer understands and acknowledges that Creative Commons is not a
++  party to this document and has no duty or obligation with respect to this
++  CC0 or use of the Work.
++
++For more information, please see
++<http://creativecommons.org/publicdomain/zero/1.0/>
+diff --git a/tls/ascon/api.h b/tls/ascon/api.h
+new file mode 100644
+index 0000000..36f4970
+--- /dev/null
++++ b/tls/ascon/api.h
+@@ -0,0 +1,10 @@
++#ifndef ASCON_API_H
++#define ASCON_API_H
++
++#define CRYPTO_KEYBYTES 16
++#define CRYPTO_NSECBYTES 0
++#define CRYPTO_NPUBBYTES 16
++#define CRYPTO_ABYTES 16
++#define CRYPTO_NOOVERLAP 1
++
++#endif
+diff --git a/tls/ascon/ascon.c b/tls/ascon/ascon.c
+new file mode 100644
+index 0000000..9e00955
+--- /dev/null
++++ b/tls/ascon/ascon.c
+@@ -0,0 +1,243 @@
++#include <stdio.h>
++#include "api.h"
++#include "crypto_aead.h"
++
++typedef unsigned char u8;
++typedef unsigned long long u64;
++typedef long long i64;
++
++#pragma GCC diagnostic ignored "-Wwrite-strings"
++#pragma GCC diagnostic ignored "-Wsign-compare"
++#pragma GCC diagnostic ignored "-Wunused-variable"
++
++#define ROTR(x,n) (((x)>>(n))|((x)<<(64-(n))))
++
++void load64(u64* x, u8* S) {
++  int i;
++  *x = 0;
++  for (i = 0; i < 8; ++i)
++    *x |= ((u64) S[i]) << (56 - i * 8);
++}
++
++void store64(u8* S, u64 x) {
++  int i;
++  for (i = 0; i < 8; ++i)
++    S[i] = (u8) (x >> (56 - i * 8));
++}
++
++void permutation(u8* S, int rounds) {
++  int i;
++  u64 x0, x1, x2, x3, x4;
++  u64 t0, t1, t2, t3, t4;
++  load64(&x0, S + 0);
++  load64(&x1, S + 8);
++  load64(&x2, S + 16);
++  load64(&x3, S + 24);
++  load64(&x4, S + 32);
++  for (i = 0; i < rounds; ++i) {
++    // addition of round constant
++    x2 ^= ((0xfull - i) << 4) | i;
++    // substitution layer
++    x0 ^= x4;    x4 ^= x3;    x2 ^= x1;
++    t0  = x0;    t1  = x1;    t2  = x2;    t3  = x3;    t4  = x4;
++    t0 =~ t0;    t1 =~ t1;    t2 =~ t2;    t3 =~ t3;    t4 =~ t4;
++    t0 &= x1;    t1 &= x2;    t2 &= x3;    t3 &= x4;    t4 &= x0;
++    x0 ^= t1;    x1 ^= t2;    x2 ^= t3;    x3 ^= t4;    x4 ^= t0;
++    x1 ^= x0;    x0 ^= x4;    x3 ^= x2;    x2 =~ x2;
++    // linear diffusion layer
++    x0 ^= ROTR(x0, 19) ^ ROTR(x0, 28);
++    x1 ^= ROTR(x1, 61) ^ ROTR(x1, 39);
++    x2 ^= ROTR(x2,  1) ^ ROTR(x2,  6);
++    x3 ^= ROTR(x3, 10) ^ ROTR(x3, 17);
++    x4 ^= ROTR(x4,  7) ^ ROTR(x4, 41);
++  }
++  store64(S + 0, x0);
++  store64(S + 8, x1);
++  store64(S + 16, x2);
++  store64(S + 24, x3);
++  store64(S + 32, x4);
++}
++
++int crypto_aead_encrypt(
++    unsigned char *c, unsigned long long *clen,
++    const unsigned char *m, unsigned long long mlen,
++    const unsigned char *ad, unsigned long long adlen,
++    const unsigned char *nsec,
++    const unsigned char *npub,
++    const unsigned char *k) {
++
++  int klen = CRYPTO_KEYBYTES;
++  //int nlen = CRYPTO_NPUBBYTES;
++  int size = 320 / 8;
++  int rate = 64 / 8;
++  int capacity = size - rate;
++  int a = 12;
++  int b = 6;
++  i64 s = adlen / rate + 1;
++  i64 t = mlen / rate + 1;
++  i64 l = mlen % rate;
++
++  u8 S[size];
++  u8 A[s * rate];
++  u8 M[t * rate];
++  i64 i, j;
++
++  // pad associated data
++  for (i = 0; i < adlen; ++i)
++    A[i] = ad[i];
++  A[adlen] = 0x80;
++  for (i = adlen + 1; i < s * rate; ++i)
++    A[i] = 0;
++  // pad plaintext
++  for (i = 0; i < mlen; ++i)
++    M[i] = m[i];
++  M[mlen] = 0x80;
++  for (i = mlen + 1; i < t * rate; ++i)
++    M[i] = 0;
++
++  // initialization
++  S[0] = klen * 8;
++  S[1] = rate * 8;
++  S[2] = a;
++  S[3] = b;
++  for (i = 4; i < size - 2 * klen; ++i)
++    S[i] = 0;
++  for (i = 0; i < klen; ++i)
++    S[size - 2 * klen + i] = k[i];
++  for (i = 0; i < klen; ++i)
++    S[size - klen + i] = npub[i];
++  permutation(S, a);
++  for (i = 0; i < klen; ++i)
++    S[rate + klen + i] ^= k[i];
++
++  // process associated data
++  if (adlen != 0) {
++    for (i = 0; i < s; ++i) {
++      for (j = 0; j < rate; ++j)
++        S[j] ^= A[i * rate + j];
++      permutation(S, b);
++    }
++  }
++  S[size - 1] ^= 1;
++
++  // process plaintext
++  for (i = 0; i < t - 1; ++i) {
++    for (j = 0; j < rate; ++j) {
++      S[j] ^= M[i * rate + j];
++      c[i * rate + j] = S[j];
++    }
++    permutation(S, b);
++  }
++  for (j = 0; j < rate; ++j)
++    S[j] ^= M[(t - 1) * rate + j];
++  for (j = 0; j < l; ++j)
++    c[(t - 1) * rate + j] = S[j];
++
++  // finalization
++  for (i = 0; i < klen; ++i)
++    S[rate + i] ^= k[i];
++  permutation(S, a);
++  for (i = 0; i < klen; ++i)
++    S[rate + klen + i] ^= k[i];
++
++  // return tag
++  for (i = 0; i < klen; ++i)
++    c[mlen + i] = S[rate + klen + i];
++  *clen = mlen + klen;
++
++  return 0;
++}
++
++int crypto_aead_decrypt(
++    unsigned char *m, unsigned long long *mlen,
++    unsigned char *nsec,
++    const unsigned char *c, unsigned long long clen,
++    const unsigned char *ad, unsigned long long adlen,
++    const unsigned char *npub,
++    const unsigned char *k) {
++
++  *mlen = 0;
++  if (clen < CRYPTO_KEYBYTES)
++    return -1;
++
++  int klen = CRYPTO_KEYBYTES;
++  //int nlen = CRYPTO_NPUBBYTES;
++  int size = 320 / 8;
++  int rate = 64 / 8;
++  int capacity = size - rate;
++  int a = 12;
++  int b = 6;
++  i64 s = adlen / rate + 1;
++  i64 t = (clen - klen) / rate + 1;
++  i64 l = (clen - klen) % rate;
++
++  u8 S[size];
++  u8 A[s * rate];
++  u8 M[t * rate];
++  i64 i, j;
++
++  // pad associated data
++  for (i = 0; i < adlen; ++i)
++    A[i] = ad[i];
++  A[adlen] = 0x80;
++  for (i = adlen + 1; i < s * rate; ++i)
++    A[i] = 0;
++
++  // initialization
++  S[0] = klen * 8;
++  S[1] = rate * 8;
++  S[2] = a;
++  S[3] = b;
++  for (i = 4; i < size - 2 * klen; ++i)
++    S[i] = 0;
++  for (i = 0; i < klen; ++i)
++    S[size - 2 * klen + i] = k[i];
++  for (i = 0; i < klen; ++i)
++    S[size - klen + i] = npub[i];
++  permutation(S, a);
++  for (i = 0; i < klen; ++i)
++    S[rate + klen + i] ^= k[i];
++
++  // process associated data
++  if (adlen) {
++    for (i = 0; i < s; ++i) {
++      for (j = 0; j < rate; ++j)
++        S[j] ^= A[i * rate + j];
++      permutation(S, b);
++    }
++  }
++  S[size - 1] ^= 1;
++
++  // process plaintext
++  for (i = 0; i < t - 1; ++i) {
++    for (j = 0; j < rate; ++j) {
++      M[i * rate + j] = S[j] ^ c[i * rate + j];
++      S[j] = c[i * rate + j];
++    }
++    permutation(S, b);
++  }
++  for (j = 0; j < l; ++j)
++    M[(t - 1) * rate + j] = S[j] ^ c[(t - 1) * rate + j];
++  for (j = 0; j < l; ++j)
++    S[j] = c[(t - 1) * rate + j];
++  S[l] ^= 0x80;
++
++  // finalization
++  for (i = 0; i < klen; ++i)
++    S[rate + i] ^= k[i];
++  permutation(S, a);
++  for (i = 0; i < klen; ++i)
++    S[rate + klen + i] ^= k[i];
++
++  // return -1 if verification fails
++  for (i = 0; i < klen; ++i)
++    if (c[clen - klen + i] != S[rate + klen + i])
++      return -1;
++
++  // return plaintext
++  *mlen = clen - klen;
++  for (i = 0; i < *mlen; ++i)
++    m[i] = M[i];
++
++  return 0;
++}
+diff --git a/tls/ascon/crypto_aead.h b/tls/ascon/crypto_aead.h
+new file mode 100644
+index 0000000..0f088f2
+--- /dev/null
++++ b/tls/ascon/crypto_aead.h
+@@ -0,0 +1,41 @@
++#ifndef CRYPTO_AEAD
++#define CRYPTO_AEAD
++
++#ifdef __cplusplus
++extern "C"
++{
++#endif
++
++// generating a ciphertext c[0],c[1],...,c[*clen-1]
++// from a plaintext m[0],m[1],...,m[mlen-1]
++// and associated data ad[0],ad[1],...,ad[adlen-1]
++// and secret message number nsec[0],nsec[1],...
++// and public message number npub[0],npub[1],...
++// and secret key k[0],k[1],...
++int crypto_aead_encrypt(
++  unsigned char *c, unsigned long long *clen,
++  const unsigned char *m, unsigned long long mlen,
++  const unsigned char *ad, unsigned long long adlen,
++  const unsigned char *nsec,
++  const unsigned char *npub,
++  const unsigned char *k);
++
++// generating a plaintext m[0],m[1],...,m[*mlen-1]
++// and secret message number nsec[0],nsec[1],...
++// from a ciphertext c[0],c[1],...,c[clen-1]
++// and associated data ad[0],ad[1],...,ad[adlen-1]
++// and public message number npub[0],npub[1],...
++// and secret key k[0],k[1],...
++int crypto_aead_decrypt(
++  unsigned char *m, unsigned long long *mlen,
++  unsigned char *nsec,
++  const unsigned char *c, unsigned long long clen,
++  const unsigned char *ad, unsigned long long adlen,
++  const unsigned char *npub,
++  const unsigned char *k);
++
++#ifdef __cplusplus
++}
++#endif
++
++#endif
+diff --git a/tls/ascon128.cpp b/tls/ascon128.cpp
+new file mode 100644
+index 0000000..9fc90ba
+--- /dev/null
++++ b/tls/ascon128.cpp
+@@ -0,0 +1,59 @@
++/******************************************************************************
++**
++** Copyright (C) 2016 Graz University of Technology
++**
++** Contact: itsec-team@iaik.tugraz.at
++**
++** IT-SECURITY LICENSE
++** Version 1.1, 12th of March 2016
++**
++** This framework may only be used within the IT-Security exercises 2016. Only
++** students that are formally registered within TUGRAZ-online may use it until
++** 30th of June 2016. After that date, licensees have the duty to safely
++** delete the software framework.
++**
++** This license does not grant you any rights to re-distribute the software,
++** to change the license, to grant access to other individuals, and to
++** commercially use the software.
++**
++** This software is distributed WITHOUT ANY WARRANTY; without even the implied
++** warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++**
++** If you are interested in a more reasonable license, please use the contact
++** information above.
++**
++******************************************************************************/
++
++#include "ascon128.h"
++#include "ascon/crypto_aead.h"
++
++ascon128::ascon128()
++{
++  // \todo initialize
++}
++
++ascon128::ascon128(const key_storage& key)
++{
++  // \todo initialize with given key
++}
++
++void ascon128::set_key(const key_storage& key)
++{
++  // \todo store key
++}
++
++void ascon128::encrypt(std::vector<uint8_t>& ciphertext, const std::vector<uint8_t>& plaintext,
++                       const nonce_storage& nonce,
++                       const std::vector<uint8_t>& additional_data) const
++{
++  // \todo perform encryption with Ascon with given data
++}
++
++bool ascon128::decrypt(std::vector<uint8_t>& plaintext, const std::vector<uint8_t>& ciphertext,
++                       const nonce_storage& nonce,
++                       const std::vector<uint8_t>& additional_data) const
++{
++  // \todo perform decryption with Ascon with given data. If decryption is
++  // successful return true, otherwise return false.
++  return false.
++}
+diff --git a/tls/ascon128.h b/tls/ascon128.h
+new file mode 100644
+index 0000000..9e264d6
+--- /dev/null
++++ b/tls/ascon128.h
+@@ -0,0 +1,84 @@
++/******************************************************************************
++**
++** Copyright (C) 2016 Graz University of Technology
++**
++** Contact: itsec-team@iaik.tugraz.at
++**
++** IT-SECURITY LICENSE
++** Version 1.1, 12th of March 2016
++**
++** This framework may only be used within the IT-Security exercises 2016. Only
++** students that are formally registered within TUGRAZ-online may use it until
++** 30th of June 2016. After that date, licensees have the duty to safely
++** delete the software framework.
++**
++** This license does not grant you any rights to re-distribute the software,
++** to change the license, to grant access to other individuals, and to
++** commercially use the software.
++**
++** This software is distributed WITHOUT ANY WARRANTY; without even the implied
++** warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++**
++** If you are interested in a more reasonable license, please use the contact
++** information above.
++**
++******************************************************************************/
++
++#ifndef ASCON128_H
++#define ASCON128_H
++
++#include <array>
++#include <vector>
++
++#include "ascon/api.h"
++#include "basic-ae.h"
++
++/// ASCON with 128 bit keys.
++class ascon128 : private basic_ae<CRYPTO_KEYBYTES, CRYPTO_NPUBBYTES, CRYPTO_ABYTES>
++{
++public:
++  typedef basic_ae<CRYPTO_KEYBYTES, CRYPTO_NPUBBYTES, CRYPTO_ABYTES> base;
++
++  using base::additional_size;
++  using base::key_size;
++  using base::nonce_size;
++
++  typedef std::array<uint8_t, key_size> key_storage;
++  typedef std::array<uint8_t, nonce_size> nonce_storage;
++
++private:
++  key_storage key_;
++
++public:
++  /// Initialize
++  ascon128();
++  /// Initialize with given key.
++  ///
++  /// \param key 128 bit key
++  ascon128(const key_storage& key);
++
++  /// Set up key for encryption and decryption.
++  ///
++  /// \param key 128 bit key
++  void set_key(const key_storage& key);
++
++  void encrypt(std::vector<uint8_t>& ciphertext, const std::vector<uint8_t>& plaintext,
++               const nonce_storage& nonce,
++               const std::vector<uint8_t>& additional_data = std::vector<uint8_t>()) const;
++
++  bool decrypt(std::vector<uint8_t>& plaintext, const std::vector<uint8_t>& ciphertext,
++               const nonce_storage& nonce,
++               const std::vector<uint8_t>& additional_data = std::vector<uint8_t>()) const;
++
++  static std::size_t ciphertext_size(const std::size_t size)
++  {
++    return size + additional_size;
++  }
++
++  static std::size_t plaintext_size(const std::size_t size)
++  {
++    return size - additional_size;
++  }
++};
++
++#endif
+diff --git a/tls/basic-ae.h b/tls/basic-ae.h
+new file mode 100644
+index 0000000..8a1db84
+--- /dev/null
++++ b/tls/basic-ae.h
+@@ -0,0 +1,41 @@
++/******************************************************************************
++**
++** Copyright (C) 2016 Graz University of Technology
++**
++** Contact: itsec-team@iaik.tugraz.at
++**
++** IT-SECURITY LICENSE
++** Version 1.1, 12th of March 2016
++**
++** This framework may only be used within the IT-Security exercises 2016. Only
++** students that are formally registered within TUGRAZ-online may use it until
++** 30th of June 2016. After that date, licensees have the duty to safely
++** delete the software framework.
++**
++** This license does not grant you any rights to re-distribute the software,
++** to change the license, to grant access to other individuals, and to
++** commercially use the software.
++**
++** This software is distributed WITHOUT ANY WARRANTY; without even the implied
++** warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++**
++** If you are interested in a more reasonable license, please use the contact
++** information above.
++**
++******************************************************************************/
++
++#ifndef BASIC_AE_H
++#define BASIC_AE_H
++
++#include <cstddef>
++#include <cstdint>
++
++template <std::size_t K, std::size_t N, std::size_t A>
++struct basic_ae
++{
++  static constexpr std::size_t key_size        = K;
++  static constexpr std::size_t nonce_size      = N;
++  static constexpr std::size_t additional_size = A;
++};
++
++#endif
+diff --git a/tls/basic-hash.h b/tls/basic-hash.h
+new file mode 100644
+index 0000000..639007a
+--- /dev/null
++++ b/tls/basic-hash.h
+@@ -0,0 +1,43 @@
++/******************************************************************************
++**
++** Copyright (C) 2016 Graz University of Technology
++**
++** Contact: itsec-team@iaik.tugraz.at
++**
++** IT-SECURITY LICENSE
++** Version 1.1, 12th of March 2016
++**
++** This framework may only be used within the IT-Security exercises 2016. Only
++** students that are formally registered within TUGRAZ-online may use it until
++** 30th of June 2016. After that date, licensees have the duty to safely
++** delete the software framework.
++**
++** This license does not grant you any rights to re-distribute the software,
++** to change the license, to grant access to other individuals, and to
++** commercially use the software.
++**
++** This software is distributed WITHOUT ANY WARRANTY; without even the implied
++** warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++**
++** If you are interested in a more reasonable license, please use the contact
++** information above.
++**
++******************************************************************************/
++
++#ifndef BASIC_HASH_H
++#define BASIC_HASH_H
++
++#include <array>
++#include <cstddef>
++#include <cstdint>
++
++template <std::size_t B, std::size_t D>
++struct basic_hash
++{
++  static constexpr std::size_t block_size  = B;
++  static constexpr std::size_t digest_size = D;
++
++  typedef std::array<uint8_t, digest_size> digest_storage;
++};
++
++#endif
+diff --git a/tls/counter.cpp b/tls/counter.cpp
+new file mode 100644
+index 0000000..99848fa
+--- /dev/null
++++ b/tls/counter.cpp
+@@ -0,0 +1,36 @@
++#include "counter.h"
++#include <cstring>
++
++incrementing_nonce::incrementing_nonce(const uint8_t* fixed_common, const uint8_t* fixed_distinct)
++{
++  // \todo Intialize with given fixed common and fixed distinct part.
++}
++
++incrementing_nonce& incrementing_nonce::operator++()
++{
++  // \todo Increment the counter.
++
++  return *this;
++}
++
++void incrementing_nonce::reset(const uint8_t* fixed_distinct)
++{
++  /// \todo reset counter and fixed distinct part
++}
++
++const std::array<uint8_t, incrementing_nonce::nonce_size>& incrementing_nonce::nonce() const
++{
++  /// \todo return current nonce
++}
++
++const std::array<uint8_t, incrementing_nonce::explicit_size>&
++incrementing_nonce::explicit_nonce() const
++{
++  /// \todo return current explicit part of the nonce
++}
++
++const std::array<uint8_t, incrementing_nonce::implicit_size>&
++incrementing_nonce::implicit_nonce() const
++{
++  /// \todo return current implicit part of the nonce
++}
+diff --git a/tls/counter.h b/tls/counter.h
+new file mode 100644
+index 0000000..67a15cb
+--- /dev/null
++++ b/tls/counter.h
+@@ -0,0 +1,44 @@
++#ifndef COUNTER_H
++#define COUNTER_H
++
++#include <array>
++#include <cstdint>
++
++// A partially implicit nonce [RFC 5116, ¬ß3.2]
++//
++// When viewing the contents of this struct as an 128 bit integer in network
++// byte error (i.e big endian), this should be an incrementing counter with
++// fixed high bits.
++class incrementing_nonce
++{
++public:
++  static constexpr std::size_t fixed_common_size   = 4;
++  static constexpr std::size_t fixed_distinct_size = 4;
++  static constexpr std::size_t fixed_size          = fixed_common_size + fixed_distinct_size;
++  static constexpr std::size_t counter_size        = 8;
++  static constexpr std::size_t implicit_size       = fixed_common_size;
++  static constexpr std::size_t explicit_size       = fixed_distinct_size + counter_size;
++  static constexpr std::size_t nonce_size          = counter_size + fixed_size;
++
++private:
++  static_assert(nonce_size == 16, "nonce needs to consist of 16 bytes");
++
++public:
++  /// Initialize with given fixed common and fixed distinc part.
++  incrementing_nonce(const uint8_t* fixed_common, const uint8_t* fixed_distinct = nullptr);
++
++  /// Increment the counter.
++  incrementing_nonce& operator++();
++
++  /// Reset to a new fixed disctinct value and reset counter to 0.
++  void reset(const uint8_t* fixed_distinct);
++
++  /// Return the current nonce.
++  const std::array<uint8_t, nonce_size>& nonce() const;
++  /// Return the explicit part of the current nonce.
++  const std::array<uint8_t, explicit_size>& explicit_nonce() const;
++  /// Return the implicit part of the current nonce.
++  const std::array<uint8_t, implicit_size>& implicit_nonce() const;
++};
++
++#endif
+diff --git a/tls/endian.h b/tls/endian.h
+new file mode 100644
+index 0000000..7697566
+--- /dev/null
++++ b/tls/endian.h
+@@ -0,0 +1,131 @@
++/******************************************************************************
++**
++** Copyright (C) 2016 Graz University of Technology
++**
++** Contact: itsec-team@iaik.tugraz.at
++**
++** IT-SECURITY LICENSE
++** Version 1.1, 12th of March 2016
++**
++** This framework may only be used within the IT-Security exercises 2016. Only
++** students that are formally registered within TUGRAZ-online may use it until
++** 30th of June 2016. After that date, licensees have the duty to safely
++** delete the software framework.
++**
++** This license does not grant you any rights to re-distribute the software,
++** to change the license, to grant access to other individuals, and to
++** commercially use the software.
++**
++** This software is distributed WITHOUT ANY WARRANTY; without even the implied
++** warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++**
++** If you are interested in a more reasonable license, please use the contact
++** information above.
++**
++******************************************************************************/
++
++#ifndef ENDIAN_H
++#define ENDIAN_H
++
++#include <cstdint>
++
++namespace detail
++{
++  template <class T>
++  struct endian_info;
++
++  template <>
++  struct endian_info<uint8_t>
++  {
++    static constexpr uint8_t swap(uint8_t v)
++    {
++      return v;
++    }
++  };
++
++  template <>
++  struct endian_info<uint16_t>
++  {
++    static constexpr uint16_t swap(uint16_t v)
++    {
++      return __builtin_bswap16(v);
++    }
++  };
++
++  template <>
++  struct endian_info<uint32_t>
++  {
++    static constexpr uint32_t swap(uint32_t v)
++    {
++      return __builtin_bswap32(v);
++    }
++  };
++
++  template <>
++  struct endian_info<uint64_t>
++  {
++    static constexpr uint64_t swap(uint64_t v)
++    {
++      return __builtin_bswap64(v);
++    }
++  };
++}
++
++/// Swap byte values of an integer.
++template <class T>
++constexpr T byte_swap(T value)
++{
++  return detail::endian_info<T>::swap(value);
++}
++
++/// Convert integer from host byte order to little endian.
++template <class T>
++constexpr T htol(T value)
++{
++#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
++  return value;
++#else
++  return byte_swap(value);
++#endif
++}
++
++/// Convert integer from from little endian to host byte order.
++template <class T>
++constexpr T ltoh(T value)
++{
++  return htol(value);
++}
++
++/// Convert integer from host byte order to big endian.
++template <class T>
++constexpr T htob(T value)
++{
++#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
++  return byte_swap(value);
++#else
++  return value;
++#endif
++}
++
++/// Convert integer from from big endian to host byte order.
++template <class T>
++constexpr T btoh(T value)
++{
++  return htob(value);
++}
++
++/// Convert integer from host byte order to network byte order.
++template <class T>
++constexpr T hton(T value)
++{
++  return htob(value);
++}
++
++/// Convert integer from network byte order to host byte order.
++template <class T>
++constexpr T ntoh(T value)
++{
++  return hton(value);
++}
++
++#endif
+diff --git a/tls/hmac-sha2.cpp b/tls/hmac-sha2.cpp
+new file mode 100644
+index 0000000..deb13fb
+--- /dev/null
++++ b/tls/hmac-sha2.cpp
+@@ -0,0 +1,43 @@
++/******************************************************************************
++**
++** Copyright (C) 2016 Graz University of Technology
++**
++** Contact: itsec-team@iaik.tugraz.at
++**
++** IT-SECURITY LICENSE
++** Version 1.1, 12th of March 2016
++**
++** This framework may only be used within the IT-Security exercises 2016. Only
++** students that are formally registered within TUGRAZ-online may use it until
++** 30th of June 2016. After that date, licensees have the duty to safely
++** delete the software framework.
++**
++** This license does not grant you any rights to re-distribute the software,
++** to change the license, to grant access to other individuals, and to
++** commercially use the software.
++**
++** This software is distributed WITHOUT ANY WARRANTY; without even the implied
++** warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++**
++** If you are interested in a more reasonable license, please use the contact
++** information above.
++**
++******************************************************************************/
++
++#include "hmac-sha2.h"
++
++hmac_sha2::hmac_sha2(const uint8_t* key, std::size_t keysize)
++{
++  /// \todo Initialze with given key.
++}
++
++void hmac_sha2::update(const uint8_t* bytes, std::size_t size)
++{
++  /// \todo Feed data to HMAC.
++}
++
++hmac_sha2::digest_storage hmac_sha2::digest()
++{
++  /// \todo Finalize HMAC compuation and return computed digest.
++  return digest_storage();
++}
+diff --git a/tls/hmac-sha2.h b/tls/hmac-sha2.h
+new file mode 100644
+index 0000000..d958c0d
+--- /dev/null
++++ b/tls/hmac-sha2.h
+@@ -0,0 +1,74 @@
++/******************************************************************************
++**
++** Copyright (C) 2016 Graz University of Technology
++**
++** Contact: itsec-team@iaik.tugraz.at
++**
++** IT-SECURITY LICENSE
++** Version 1.1, 12th of March 2016
++**
++** This framework may only be used within the IT-Security exercises 2016. Only
++** students that are formally registered within TUGRAZ-online may use it until
++** 30th of June 2016. After that date, licensees have the duty to safely
++** delete the software framework.
++**
++** This license does not grant you any rights to re-distribute the software,
++** to change the license, to grant access to other individuals, and to
++** commercially use the software.
++**
++** This software is distributed WITHOUT ANY WARRANTY; without even the implied
++** warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++**
++** If you are interested in a more reasonable license, please use the contact
++** information above.
++**
++******************************************************************************/
++
++#ifndef HMAC_SHA2_H
++#define HMAC_SHA2_H
++
++#include "sha2.h"
++
++#include <array>
++#include <cstdint>
++
++/// HMAC using SHA2
++///
++/// This class is intended to be used in the following way:
++///
++/// * Initialize on construction with the key.
++/// * Call update as long as data should be feed to the HMAC. Note that the
++///   message can be given in full using one call to update or by calling update
++///   multiple times with consecutive parts of the message.
++/// * Call digest to get the HMAC.
++///
++/// In the following example, both instances produce the same HMAC:
++/// \code
++/// uint8_t data[data_size]; // assume data_size % 2 == 0
++/// hmac_sha2 h1(key, key_size), h2(key, key_size);
++/// h1.update(data, data_size);
++/// h2.update(data, data_size / 2);
++/// h2.update(data + data_size / 2, data_size / 2)
++/// const auto d1 = h1.digest(), d2 = h2.digest();
++/// assert(memcmp(d1.data(), d2.data(), digest_size) == 0);
++/// \endcode
++class hmac_sha2
++{
++public:
++  /// Size (in bytes) of the digest.
++  static constexpr std::size_t digest_size = sha2::digest_size;
++  /// Block size.
++  static constexpr std::size_t block_size = sha2::block_size;
++  /// Array containing the digest.
++  typedef std::array<uint8_t, digest_size> digest_storage;
++
++  /// Initialize with key of the given size.
++  hmac_sha2(const uint8_t* key, std::size_t keysize);
++
++  /// Feed data to the HMAC.
++  void update(const uint8_t* bytes, std::size_t size);
++  /// Compute the digest.
++  digest_storage digest();
++};
++
++#endif
+diff --git a/tls/misc.h b/tls/misc.h
+new file mode 100644
+index 0000000..0938c65
+--- /dev/null
++++ b/tls/misc.h
+@@ -0,0 +1,42 @@
++/******************************************************************************
++**
++** Copyright (C) 2016 Graz University of Technology
++**
++** Contact: itsec-team@iaik.tugraz.at
++**
++** IT-SECURITY LICENSE
++** Version 1.1, 12th of March 2016
++**
++** This framework may only be used within the IT-Security exercises 2016. Only
++** students that are formally registered within TUGRAZ-online may use it until
++** 30th of June 2016. After that date, licensees have the duty to safely
++** delete the software framework.
++**
++** This license does not grant you any rights to re-distribute the software,
++** to change the license, to grant access to other individuals, and to
++** commercially use the software.
++**
++** This software is distributed WITHOUT ANY WARRANTY; without even the implied
++** warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++**
++** If you are interested in a more reasonable license, please use the contact
++** information above.
++**
++******************************************************************************/
++
++#ifndef MISC_H
++#define MISC_H
++
++#include <cstdint>
++
++constexpr uint32_t rotate(uint32_t x, uint8_t c)
++{
++  return (x << c) | (x >> (32 - c));
++}
++
++constexpr uint32_t right_rotate(uint32_t x, uint8_t c)
++{
++  return (x >> c) | (x << (32 - c));
++}
++
++#endif
+diff --git a/tls/prf.cpp b/tls/prf.cpp
+new file mode 100644
+index 0000000..26404e2
+--- /dev/null
++++ b/tls/prf.cpp
+@@ -0,0 +1,38 @@
++/******************************************************************************
++**
++** Copyright (C) 2016 Graz University of Technology
++**
++** Contact: itsec-team@iaik.tugraz.at
++**
++** IT-SECURITY LICENSE
++** Version 1.1, 12th of March 2016
++**
++** This framework may only be used within the IT-Security exercises 2016. Only
++** students that are formally registered within TUGRAZ-online may use it until
++** 30th of June 2016. After that date, licensees have the duty to safely
++** delete the software framework.
++**
++** This license does not grant you any rights to re-distribute the software,
++** to change the license, to grant access to other individuals, and to
++** commercially use the software.
++**
++** This software is distributed WITHOUT ANY WARRANTY; without even the implied
++** warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++**
++** If you are interested in a more reasonable license, please use the contact
++** information above.
++**
++******************************************************************************/
++
++#include "prf.h"
++
++hmac_prf::hmac_prf(const uint8_t* secret, size_t secretlen, const std::string& label,
++                   const uint8_t* seed, size_t seedlen)
++{
++  // \todo Initialize with given secret, label and seed.
++}
++
++void hmac_prf::get_output(uint8_t* dst, size_t len)
++{
++  /// \todo Copy len bytes from PRFs output to dst.
++}
+diff --git a/tls/prf.h b/tls/prf.h
+new file mode 100644
+index 0000000..19adbd2
+--- /dev/null
++++ b/tls/prf.h
+@@ -0,0 +1,45 @@
++/******************************************************************************
++**
++** Copyright (C) 2016 Graz University of Technology
++**
++** Contact: itsec-team@iaik.tugraz.at
++**
++** IT-SECURITY LICENSE
++** Version 1.1, 12th of March 2016
++**
++** This framework may only be used within the IT-Security exercises 2016. Only
++** students that are formally registered within TUGRAZ-online may use it until
++** 30th of June 2016. After that date, licensees have the duty to safely
++** delete the software framework.
++**
++** This license does not grant you any rights to re-distribute the software,
++** to change the license, to grant access to other individuals, and to
++** commercially use the software.
++**
++** This software is distributed WITHOUT ANY WARRANTY; without even the implied
++** warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++**
++** If you are interested in a more reasonable license, please use the contact
++** information above.
++**
++******************************************************************************/
++
++#ifndef PRF_H
++#define PRF_H
++
++#include "hmac-sha2.h"
++#include <string>
++
++/// TLS PRF using HMAC-SHA256 according to RFC 5246 ¬ß5
++class hmac_prf
++{
++public:
++  /// Initialize TLS PRF with given secret, label and seed
++  hmac_prf(const uint8_t* secret, size_t secretlen, const std::string& label, const uint8_t* seed,
++           size_t seedlen);
++
++  /// Copy given number of bytes from the PRFs output to the destination buffer.
++  void get_output(uint8_t* dst, size_t len);
++};
++
++#endif
+diff --git a/tls/random.cpp b/tls/random.cpp
+new file mode 100644
+index 0000000..b8034bb
+--- /dev/null
++++ b/tls/random.cpp
+@@ -0,0 +1,32 @@
++/******************************************************************************
++**
++** Copyright (C) 2016 Graz University of Technology
++**
++** Contact: itsec-team@iaik.tugraz.at
++**
++** IT-SECURITY LICENSE
++** Version 1.1, 12th of March 2016
++**
++** This framework may only be used within the IT-Security exercises 2016. Only
++** students that are formally registered within TUGRAZ-online may use it until
++** 30th of June 2016. After that date, licensees have the duty to safely
++** delete the software framework.
++**
++** This license does not grant you any rights to re-distribute the software,
++** to change the license, to grant access to other individuals, and to
++** commercially use the software.
++**
++** This software is distributed WITHOUT ANY WARRANTY; without even the implied
++** warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++**
++** If you are interested in a more reasonable license, please use the contact
++** information above.
++**
++******************************************************************************/
++
++#include "random.h"
++
++void get_random_data(uint8_t* data, std::size_t size)
++{
++  /// \todo Fetch size random bytes and store them in data.
++}
+diff --git a/tls/random.h b/tls/random.h
+new file mode 100644
+index 0000000..f9d7bbe
+--- /dev/null
++++ b/tls/random.h
+@@ -0,0 +1,37 @@
++/******************************************************************************
++**
++** Copyright (C) 2016 Graz University of Technology
++**
++** Contact: itsec-team@iaik.tugraz.at
++**
++** IT-SECURITY LICENSE
++** Version 1.1, 12th of March 2016
++**
++** This framework may only be used within the IT-Security exercises 2016. Only
++** students that are formally registered within TUGRAZ-online may use it until
++** 30th of June 2016. After that date, licensees have the duty to safely
++** delete the software framework.
++**
++** This license does not grant you any rights to re-distribute the software,
++** to change the license, to grant access to other individuals, and to
++** commercially use the software.
++**
++** This software is distributed WITHOUT ANY WARRANTY; without even the implied
++** warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++**
++** If you are interested in a more reasonable license, please use the contact
++** information above.
++**
++******************************************************************************/
++
++#ifndef RANDOM_H
++#define RANDOM_H
++
++#include <cstddef>
++#include <cstdint>
++
++/// Fetch requested number of random bytes from a random data source suitable
++/// for cryptographic use.
++void get_random_data(uint8_t* data, std::size_t size);
++
++#endif
+diff --git a/tls/sha2.cpp b/tls/sha2.cpp
+new file mode 100644
+index 0000000..127866b
+--- /dev/null
++++ b/tls/sha2.cpp
+@@ -0,0 +1,151 @@
++/******************************************************************************
++**
++** Copyright (C) 2016 Graz University of Technology
++**
++** Contact: itsec-team@iaik.tugraz.at
++**
++** IT-SECURITY LICENSE
++** Version 1.1, 12th of March 2016
++**
++** This framework may only be used within the IT-Security exercises 2016. Only
++** students that are formally registered within TUGRAZ-online may use it until
++** 30th of June 2016. After that date, licensees have the duty to safely
++** delete the software framework.
++**
++** This license does not grant you any rights to re-distribute the software,
++** to change the license, to grant access to other individuals, and to
++** commercially use the software.
++**
++** This software is distributed WITHOUT ANY WARRANTY; without even the implied
++** warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++**
++** If you are interested in a more reasonable license, please use the contact
++** information above.
++**
++******************************************************************************/
++
++#include "sha2.h"
++#include "endian.h"
++#include "misc.h"
++
++#include <cstring>
++
++namespace
++{
++  constexpr uint32_t round_constants[] = {
++      0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4,
++      0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe,
++      0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f,
++      0x4a7484aa, 0x5cb0a9dc, 0x76f988da, 0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7,
++      0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967, 0x27b70a85, 0x2e1b2138, 0x4d2c6dfc,
++      0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85, 0xa2bfe8a1, 0xa81a664b,
++      0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070, 0x19a4c116,
++      0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
++      0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7,
++      0xc67178f2};
++
++  constexpr uint8_t pad[] = {0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++                             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++                             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++                             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++                             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++                             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
++}
++
++void sha2::step()
++{
++#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
++  for (auto& v : chunck_.b32)
++    v = byte_swap(v);
++#endif
++
++  std::array<uint32_t, digest_size / sizeof(uint32_t)> S;
++  std::array<uint32_t, block_size> W;
++
++  std::copy(std::begin(digest_.b32), std::end(digest_.b32), S.begin());
++  std::copy(std::begin(chunck_.b32), std::end(chunck_.b32), W.begin());
++
++  for (std::size_t t = 16; t != W.size(); ++t)
++  {
++    const auto s0 = right_rotate(W[t - 15], 7) ^ right_rotate(W[t - 15], 18) ^ (W[t - 15] >> 3);
++    const auto s1 = right_rotate(W[t - 2], 17) ^ right_rotate(W[t - 2], 19) ^ (W[t - 2] >> 10);
++    W[t]          = W[t - 16] + s0 + W[t - 7] + s1;
++  }
++
++  for (std::size_t t = 0; t != 64; ++t)
++  {
++    const auto s1    = right_rotate(S[4], 6) ^ right_rotate(S[4], 11) ^ right_rotate(S[4], 25);
++    const auto ch    = (S[4] & S[5]) ^ (~S[4] & S[6]);
++    const auto temp1 = S[7] + s1 + ch + round_constants[t] + W[t];
++    const auto s0    = right_rotate(S[0], 2) ^ right_rotate(S[0], 13) ^ right_rotate(S[0], 22);
++    const auto maj   = (S[0] & S[1]) ^ (S[0] & S[2]) ^ (S[1] & S[2]);
++    const auto temp2 = s0 + maj;
++
++    S[7] = S[6];
++    S[6] = S[5];
++    S[5] = S[4];
++    S[4] = S[3] + temp1;
++    S[3] = S[2];
++    S[2] = S[1];
++    S[1] = S[0];
++    S[0] = temp1 + temp2;
++  }
++
++  for (std::size_t t = 0; t != digest_size / sizeof(uint32_t); ++t)
++    digest_.b32[t] += S[t];
++}
++
++/*------------------------------------------------------------*/
++
++sha2::sha2()
++  : chunck_{{0}}, digest_{{0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c,
++                           0x1f83d9ab, 0x5be0cd19}},
++    counter_(0)
++{
++}
++
++void sha2::update(const uint8_t* data, std::size_t len)
++{
++  std::size_t off = 0;
++  while (off < len)
++  {
++    const std::size_t gap_start  = counter_ % block_size;
++    const std::size_t gap_length = block_size - gap_start;
++    const std::size_t copy_size  = std::min(gap_length, len - off);
++
++    std::memcpy(&chunck_.b8[gap_start], &data[off], copy_size);
++    counter_ += copy_size;
++    off += copy_size;
++
++    if (counter_ % block_size == 0)
++      step();
++  }
++}
++
++sha2::digest_storage sha2::digest()
++{
++  const uint64_t message_length = htob(counter_ * 8);
++
++  const std::size_t gap_start = counter_ % block_size;
++  const std::size_t gap_size  = block_size - gap_start;
++  if (gap_size > sizeof(uint64_t))
++    std::memcpy(&chunck_.b8[gap_start], pad, gap_size - sizeof(uint64_t));
++  else
++  {
++    std::memcpy(&chunck_.b8[gap_start], pad, gap_size);
++    step();
++    std::memcpy(chunck_.b8, &pad[gap_size], block_size - sizeof(uint64_t));
++  }
++
++  std::memcpy(&chunck_.b8[block_size - sizeof(uint64_t)], &message_length, sizeof(uint64_t));
++  step();
++
++#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
++  for (auto& v : digest_.b32)
++    v = byte_swap(v);
++#endif
++
++  digest_storage result;
++  std::memcpy(result.data(), &digest_.b8[0], digest_size);
++  return result;
++}
+diff --git a/tls/sha2.h b/tls/sha2.h
+new file mode 100644
+index 0000000..923aae4
+--- /dev/null
++++ b/tls/sha2.h
+@@ -0,0 +1,95 @@
++/******************************************************************************
++**
++** Copyright (C) 2016 Graz University of Technology
++**
++** Contact: itsec-team@iaik.tugraz.at
++**
++** IT-SECURITY LICENSE
++** Version 1.1, 12th of March 2016
++**
++** This framework may only be used within the IT-Security exercises 2016. Only
++** students that are formally registered within TUGRAZ-online may use it until
++** 30th of June 2016. After that date, licensees have the duty to safely
++** delete the software framework.
++**
++** This license does not grant you any rights to re-distribute the software,
++** to change the license, to grant access to other individuals, and to
++** commercially use the software.
++**
++** This software is distributed WITHOUT ANY WARRANTY; without even the implied
++** warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++**
++** If you are interested in a more reasonable license, please use the contact
++** information above.
++**
++******************************************************************************/
++
++#ifndef SHA2_H
++#define SHA2_H
++
++#include <algorithm>
++#include <array>
++#include <cstddef>
++#include <cstdint>
++#include <cstring>
++#include <string>
++
++#include "basic-hash.h"
++
++/// SHA2
++///
++/// This class is intended to be used in the following way:
++///
++/// * Call update as long as data should be feed to the hash function. Note that
++///   the message can be given in full using one call to update or by calling
++///   update multiple times with consecutive parts of the message.
++/// * Call digest to get the digest.
++///
++/// In the following example, both instances produce the same digest:
++/// \code
++/// uint8_t data[data_size]; // assume data_size % 2 == 0
++/// sha2 h1, h2;
++/// h1.update(data, data_size);
++/// h2.update(data, data_size / 2);
++/// h2.update(data + data_size / 2, data_size / 2)
++/// const auto d1 = h1.digest(), d2 = h2.digest();
++/// assert(memcmp(d1.data(), d2.data(), digest_size) == 0);
++/// \endcode
++
++class sha2 : private basic_hash<64, 32>
++{
++public:
++  typedef basic_hash<64, 32> base;
++  typedef typename base::digest_storage digest_storage;
++
++  using base::block_size;
++  using base::digest_size;
++
++private:
++  union {
++    uint32_t b32[block_size / sizeof(uint32_t)];
++    uint8_t b8[sizeof(b32)];
++  } chunck_;
++  union {
++    uint32_t b32[digest_size / sizeof(uint32_t)];
++    uint8_t b8[sizeof(b32)];
++  } digest_;
++  uint64_t counter_;
++
++  void step();
++
++public:
++  sha2();
++
++  /// Feed data to hash function.
++  void update(const uint8_t* data, std::size_t size);
++  /// Compute final digest.
++  digest_storage digest();
++
++  static std::string name()
++  {
++    return "SHA256";
++  }
++};
++
++#endif
+diff --git a/tls/tests/CMakeLists.txt b/tls/tests/CMakeLists.txt
+new file mode 100644
+index 0000000..deaa650
+--- /dev/null
++++ b/tls/tests/CMakeLists.txt
+@@ -0,0 +1,33 @@
++add_definitions(${CHECK_DEFINITIONS})
++include_directories(${CHECK_INCLUDE_DIRS})
++link_directories(${CHECK_LIBRARY_DIRS})
++
++add_executable(test_nonce nonce.cpp)
++target_link_libraries(test_nonce primitives ${CHECK_LIBRARIES})
++
++add_executable(test_prf prf.cpp)
++target_link_libraries(test_prf primitives ${CHECK_LIBRARIES})
++
++add_executable(test_hmac_sha2 hmac_sha2.cpp)
++target_link_libraries(test_hmac_sha2
++                      primitives ${CHECK_LIBRARIES})
++
++add_executable(test_ascon ascon.cpp)
++target_link_libraries(test_ascon primitives ${CHECK_LIBRARIES})
++
++add_executable(test_tls_ascon tls_ascon.cpp)
++target_link_libraries(test_tls_ascon primitives ${CHECK_LIBRARIES})
++
++add_executable(test_random random.cpp)
++target_link_libraries(test_random primitives ${CHECK_LIBRARIES})
++
++add_test(NAME prf COMMAND test_prf)
++add_test(NAME nonce COMMAND test_nonce)
++add_test(NAME hmac_sha2 COMMAND test_hmac_sha2)
++add_test(NAME ascon COMMAND test_ascon)
++add_test(NAME random COMMAND test_random)
++foreach(idx RANGE 1 19)
++  add_test(NAME "tls_ascon_${idx}" COMMAND test_tls_ascon
++    "${CMAKE_CURRENT_SOURCE_DIR}/data/ascon-testcase-${idx}.chal"
++    "${CMAKE_CURRENT_SOURCE_DIR}/data/ascon-testcase-${idx}.sol")
++endforeach(idx)
+diff --git a/tls/tests/ascon.cpp b/tls/tests/ascon.cpp
+new file mode 100644
+index 0000000..69c5529
+--- /dev/null
++++ b/tls/tests/ascon.cpp
+@@ -0,0 +1,174 @@
++/*****************************************************************************
++**
++** Copyright (C) 2016 Graz University of Technology
++**
++** Contact: itsec-team@iaik.tugraz.at
++**
++** IT-SECURITY LICENSE
++** Version 1.1, 12th of March 2016
++**
++** This framework may only be used within the IT-Security exercises 2016. Only
++** students that are formally registered within TUGRAZ-online may use it until
++** 30th of June 2016. After that date, licensees have the duty to safely
++** delete the software framework.
++**
++** This license does not grant you any rights to re-distribute the software,
++** to change the license, to grant access to other individuals, and to
++** commercially use the software.
++**
++** This software is distributed WITHOUT ANY WARRANTY; without even the implied
++** warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++**
++** If you are interested in a more reasonable license, please use the contact
++** information above.
++**
++******************************************************************************/
++
++#include "../ascon128.h"
++#include "../counter.h"
++#include "helpers.h"
++
++#include <algorithm>
++#include <string>
++
++#include <check.h>
++
++namespace
++{
++  constexpr ascon128::key_storage key = {{0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
++                                          0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff}};
++
++  constexpr uint8_t fixed_common[]     = {0x01, 0x02, 0x03, 0x04};
++  constexpr uint8_t fixed_distinct[]   = {0x05, 0x06, 0x07, 0x08};
++  constexpr uint8_t fixed_distinct_2[] = {0x06, 0x07, 0x08, 0x09};
++
++  const std::string plaintext_1 = "abcdefghijklmnoqrstuvwxyz0123456789ABCDEFGHIJKLMNOQRSTUVWXYZ";
++  const std::string ad_1        = digest_to_string(plaintext_1);
++  const std::string expected_1 = "92cfeb539e661d00136e31b317afee3d4e8272fd71a873eade188bdcac2ea37f9"
++                                 "e5f4e2ab21247779ab9fba41670ad0d0b933837b944f3e9948fc72ccd5c8234e2"
++                                 "646c73740c60c6eeb3cbc8";
++}
++
++START_TEST(encrypt_decrypt)
++{
++  incrementing_nonce nonce(fixed_common, fixed_distinct);
++  ++nonce;
++  const auto n = nonce.nonce();
++
++  ascon128 ascon(key);
++
++  std::vector<uint8_t> plaintext{{'p'}};
++  std::vector<uint8_t> ciphertext;
++  ascon.encrypt(ciphertext, plaintext, n);
++  ck_assert_uint_eq(ciphertext.size(), plaintext.size() + ascon128::additional_size);
++
++  std::vector<uint8_t> plaintext_2;
++  const auto res = ascon.decrypt(plaintext_2, ciphertext, n);
++
++  ck_assert_uint_eq(res, true);
++  ck_assert_uint_eq(plaintext_2.size(), plaintext.size());
++  ck_assert_uint_eq(plaintext[0], plaintext_2[0]);
++}
++END_TEST
++
++START_TEST(encrypt_decrypt_ad)
++{
++  incrementing_nonce nonce(fixed_common, fixed_distinct);
++  ++nonce;
++  const auto n = nonce.nonce();
++
++  ascon128 ascon(key);
++
++  std::vector<uint8_t> plaintext{{'p'}};
++  std::vector<uint8_t> ciphertext;
++  ascon.encrypt(ciphertext, plaintext, n, plaintext);
++  ck_assert_uint_eq(ciphertext.size(), plaintext.size() + ascon128::additional_size);
++
++  std::vector<uint8_t> plaintext_2;
++  auto res = ascon.decrypt(plaintext_2, ciphertext, n);
++  ck_assert_uint_eq(res, false);
++
++  res = ascon.decrypt(plaintext_2, ciphertext, n, plaintext);
++  ck_assert_uint_eq(res, true);
++  ck_assert_uint_eq(plaintext_2.size(), plaintext.size());
++  ck_assert_uint_eq(plaintext[0], plaintext_2[0]);
++}
++END_TEST
++
++START_TEST(encrypt_decrypt_distinct)
++{
++  incrementing_nonce nonce(fixed_common, fixed_distinct);
++  ++nonce;
++
++  ascon128 ascon(key);
++
++  std::vector<uint8_t> plaintext{{'p'}};
++  std::vector<uint8_t> ciphertext, ciphertext_2;
++  ascon.encrypt(ciphertext, plaintext, nonce.nonce());
++  ++nonce;
++  ascon.encrypt(ciphertext_2, plaintext, nonce.nonce());
++
++  ck_assert_uint_eq(ciphertext.size(), ciphertext_2.size());
++  ck_assert_uint_eq(std::equal(ciphertext.begin(), ciphertext.end(), ciphertext_2.begin()), false);
++}
++END_TEST
++
++START_TEST(encrypt_decrypt_fail)
++{
++  incrementing_nonce nonce(fixed_common, fixed_distinct);
++  ++nonce;
++
++  ascon128 ascon(key);
++
++  std::vector<uint8_t> plaintext{{'p'}};
++  std::vector<uint8_t> ciphertext, ciphertext_2;
++  ascon.encrypt(ciphertext, plaintext, nonce.nonce());
++  ascon.encrypt(ciphertext_2, plaintext, nonce.nonce());
++
++  ciphertext[0] += 1;
++  ciphertext_2[1] += 1;
++
++  auto res = ascon.decrypt(plaintext, ciphertext, nonce.nonce());
++  ck_assert_uint_eq(res, false);
++
++  res = ascon.decrypt(plaintext, ciphertext_2, nonce.nonce());
++  ck_assert_uint_eq(res, false);
++}
++END_TEST
++
++START_TEST(encrypt)
++{
++  incrementing_nonce nonce(fixed_common, fixed_distinct);
++  ++nonce;
++
++  ascon128 ascon(key);
++
++  std::vector<uint8_t> plaintext{plaintext_1.begin(), plaintext_1.end()};
++  std::vector<uint8_t> ad(ad_1.begin(), ad_1.end());
++  std::vector<uint8_t> ciphertext;
++  ascon.encrypt(ciphertext, plaintext, nonce.nonce(), ad);
++
++  const auto c = digest_to_string(ciphertext);
++  ck_assert_str_eq(c.c_str(), expected_1.c_str());
++}
++END_TEST
++
++int main()
++{
++  Suite* suite = suite_create("Ascon");
++
++  TCase* tcase = tcase_create("Simple");
++  tcase_add_test(tcase, encrypt);
++  tcase_add_test(tcase, encrypt_decrypt);
++  tcase_add_test(tcase, encrypt_decrypt_ad);
++  tcase_add_test(tcase, encrypt_decrypt_distinct);
++  tcase_add_test(tcase, encrypt_decrypt_fail);
++  suite_add_tcase(suite, tcase);
++
++  SRunner* suite_runner = srunner_create(suite);
++  srunner_run_all(suite_runner, CK_VERBOSE);
++  int number_failed = srunner_ntests_failed(suite_runner);
++  srunner_free(suite_runner);
++
++  return !number_failed ? EXIT_SUCCESS : EXIT_FAILURE;
++}
+diff --git a/tls/tests/data/ascon-testcase-1.chal b/tls/tests/data/ascon-testcase-1.chal
+new file mode 100644
+index 0000000000000000000000000000000000000000..bea4369b5bcb8987430b9748d613369e6b37d234
+GIT binary patch
+literal 155
+zcmXrsC$qEt$-Pg`qV+ww_U%U}Wu@@CC<ZMKo$Svh$dI2`tf=6~Ri2-hl3J8jnxhcv
+zu~+g6&v9`<28G1D6oul_;*!M7ykdpYVx8EA)};&G9-ahBWn>mB<d^3uWacKOr|Kvq
+zG6jYGX*TJaBFIpbnVOfPqfnlanx~MGSd^Xjt+T}B)|JOM1Q|RP@>0uEixkQeixm<T
+H(u-07D`Y!3
+
+literal 0
+HcmV?d00001
+
+diff --git a/tls/tests/data/ascon-testcase-1.sol b/tls/tests/data/ascon-testcase-1.sol
+new file mode 100644
+index 0000000000000000000000000000000000000000..524b5224bcbc47e9e17c29008a802dec196a7157
+GIT binary patch
+literal 250
+zcmWe<W@gZxl$FBE00mA9#E(T-Zu-~Gu&1JbWlR`b>g;oTi4$jiwpPlXYaaF{MI22B
+z<2mj|uAn-BC!rH&uo(L@{Qm4C)?~LykLy*_HF3iY?_DL)bui_vd2ipv(mD6R<Zit`
+z^Q#>0XFN}7o8SH;iQ7N6DZ+L4RCFE8N;<)lTsOvBu3B{etah2kf;*8lHTz$9+V8FU
+xCwOuF-?&tC9V|>nOZPYN+{%;VW@*y9y!Tq|3f)6bJB1|<|1fv+%>K1R1pw@eR^0#q
+
+literal 0
+HcmV?d00001
+
+diff --git a/tls/tests/data/ascon-testcase-10.chal b/tls/tests/data/ascon-testcase-10.chal
+new file mode 100644
+index 0000000000000000000000000000000000000000..8b3dc45e77163b089bd1405cfaae35d6cbfa200a
+GIT binary patch
+literal 525
+zcmZuuu}U356kXDYTiIEN$px{|hlOPlQlyK8mKIyh+jrla>zlpvm^=H{)xt)^LJK<)
+z1gnrHX%$J8GT2DK;3xPK;+<`TknYaRIp>~p=Hcu8<vG7QKHa!EKKr%w=H%kx@5=ts
+z$Ak5S-$e$|VvZ(6+XJHqUyI=Z)I4V2Fif1`C}08t`$#1Ypx;7;@1e2C@CB@LlLqwb
+zy*=>5PR~({4u5Vv-Ch@e=8G&0YX^b>nPLmp2t+eh`oxQ%2zgG-ss-dox=MWQdf;e`
+zNlx^lL5z9j0~3!Vfn^eOgy#P7)AQE;^sdPMLBs#hmP)Ipk#~Fx4Mm%lHr6}LQ;@i(
+zkER0SJfrrZMGO%gy#2PkId?Vty~rwZq=7qXN?rPzHL6HXJU}S}^-bR)41K6Np9w@P
+zSf&<}o+FfAij~^y)DvV9@NnkGs@?s(SY+D5hYs9gd<B^_Gfq+0Yl8+x0Zqh^t8bF1
+bl7{t@nl;!~@t(#aHIl@gpQ3AFYMgrkej~yn
+
+literal 0
+HcmV?d00001
+
+diff --git a/tls/tests/data/ascon-testcase-10.sol b/tls/tests/data/ascon-testcase-10.sol
+new file mode 100644
+index 0000000000000000000000000000000000000000..e2c6b75a51448ced22a553affda7244a576f8bd3
+GIT binary patch
+literal 620
+zcmWe<W@aewnRV?t0~ADl_z~h;u`_3b^sA?PeRnD?%HFwkhasPbN9=-SDj(e{ZTzGk
+z-?T_Ku;a1&KdbMnpii7$AYXf~tm3qmXKp5joYN=EH5V$J*z}&~_J)<4KOS|wSbpX3
+z`!5Tnn|kwIJ<k4i{W8zKAuw;_@#mc4Xm&Fmo78bP_3V~;%BS9aGr#%yD*w^zp=($Z
+z<_c!Sy4{&m-~WWUY|8x^D>cOIT2^isf37gY?A4Keu9*)_)^B{@+UBI#D1BkkkNCZF
+z4+#jChiz+KxM{_T_l?E!T0+u!HsRJ67JmB9Wpi+*ebW2V8R&L19o1-QaP5BUSQxz~
+zbk3a)wcW;Nza?2cZ1Tzc`I%i*pieC#%lm}f-2jff%TFCEx7GXSzV~W)QM&j1I`;GL
+zHvPZum?%)P;ouCG1g;Zx3jFhJzp^#mTJ`R;_pb0ot-rK_wlb~E)LD5)kIQS%L3F#B
+zkN@7m^xXMuqM@9G<A&TR$%`i(b<ckMgm2;Nd9i!%e_MA{p()a1mE>hR-Xv2#ljU2~
+zHa%)8ob+e?ic8!J7QOoUMf<}A`I%Q<=z6ed`FKv9UnbcY=visrxGgiwbioZzCjYma
+z862DP_vg>>_=Rpa%S1g%hga)lXPlk7Lapd=v`zd9&O|rv71LMzS<k=HsHWhRc1?c9
+zl;<MFl`gkutvR;+`fPVOJ&}X6E^nH+=hWLM>6yw8Yu89JX$W83P_}EOPS-mz$@R;+
+b<1JpxA2|H))Fsgzt*m?3Z@T~6DE$ur?^7T{
+
+literal 0
+HcmV?d00001
+
+diff --git a/tls/tests/data/ascon-testcase-11.chal b/tls/tests/data/ascon-testcase-11.chal
+new file mode 100644
+index 0000000000000000000000000000000000000000..a9178664ae73ce4df0fd22821797cb5e932f2952
+GIT binary patch
+literal 540
+zcmbV}u}T9$5QftUSBah7kVX)(6wyWyg$UMy#lc=~l3Oyj8+LZ@xPXEdHiEU*Vk1O+
+z0V}amd;wc42?*MYa|^zJ<<8Fh|M$;4o>p6TJFnYUM;~t|KfT$@eELq$mp8M;-8$`{
+zV?{u=LZ}PfFCatZ7?jC@1AC<nL*Nxq4B96HvdYV^vq2hy)Qq$OdUQtn2J8Sb(#)Gt
+zz!%fCaDQ=py_|L+S8imG8N|x**rCc9$_B8(R$k-^R28;*IS7L<fDudZHpy!wYOSQ5
+zZJ^kqGPW)gD2B0JKYxEZ{O%^=qhKi70+fh`W)Hp)LSySyI4IDpv@r>#iZL}cP$?p8
+zz>6D0t;M)fV;kIG%n~DCA|qd~`_t}Zwv={a!nl?mkVfc}Wl^<JIO5BvJZ#`LP%tAw
+zFv*ydi3>zQ^16>XWDS(KAy|^V*Dk?<pL_b;JG)(YNIU<TmS|a+OxkP2nA&?uTw6yu
+NsM4BYTTbM-^b7Yg$&&y8
+
+literal 0
+HcmV?d00001
+
+diff --git a/tls/tests/data/ascon-testcase-11.sol b/tls/tests/data/ascon-testcase-11.sol
+new file mode 100644
+index 0000000000000000000000000000000000000000..5cd0475f3df55f39d0eeca822275f43c8239fe45
+GIT binary patch
+literal 635
+zcmWe<W@e~5BM|q50SfM`W;&m5dnm!4_ha#j3uhO17p#l6Vz>BPeL+QRa+=)3G{Gxr
+zrEj;&$=!S%zl4Qrr<K6hxE>D9*?Q|X1$lC)rF)gHv^Br@$kJ*u+quShX-vsk22)%V
+zyBal3*K4@V%k7^S(ww$NCH05L9$Sg<6XIyrGdj!tUaxk2vEgEi<HlSiHx7OXf7*Vo
+zZ{p{(hi6vl#qiv_arm1?{kr2b3|lMZC(8xf1Rm!!&dPfcGetdswM#$1$l!_6JJb5D
+zC5x3__1Z7Jw|nirq(y5^?_sDAe^Yh;-37}f-g7s;XA*uMD$ugm?=iadOzZXgyjKJk
+z7QEzRkGFMQc_mNwe?d;_<n~~FH?DI&%ltT=%ef!zJ5lvU$;_ZHYI_-fW1hf8B?aBO
+z)7>X_&rR}trffMqXz>}NJ$Lf^zh7al+jGJG^ohSSf*;+A&M#tgm#JQ(ygbF(&d2cK
+zjb&B0(XD4rn>D{FWm%rpKfmVZ4^@wyKj-r%t=IhK78$-(K64K36Z&E0YhBZSGIal^
+zo9o^@ZJ3ti(qUd?lzmq-ed;@p-TQc1RxZ4*e7$8t-pznx%YNpEo&I*iJ8+6fy~*O3
+zA0Kp9uvLY-Kg;2N@ao6gjLru_=+?9Bx@DPq`ueGp3KD$}BAD#z#AWYt@ZEgu5|DhH
+zM|t*zkbSq8uhM>e?7%1CQ-(Uv9;~@|*uy-2iKMLW^Pk0gXU3hZfBoEeS>-N^MJGNS
+p3uV1Df%jTi^X!HHiVr`1Ew}vlKCg4Nnz7$5H@0!Tx~tK89su;%BFg{(
+
+literal 0
+HcmV?d00001
+
+diff --git a/tls/tests/data/ascon-testcase-12.chal b/tls/tests/data/ascon-testcase-12.chal
+new file mode 100644
+index 0000000000000000000000000000000000000000..3c0eac945e00212090326c625fe5ae50e42d0ed6
+GIT binary patch
+literal 555
+zcma)(ze^lZ5XZ0H+QQDU4W~hc^jAdCKOh9G#=Y6y$-OskdGn5CyEI}WSOzRaEG)!A
+zEG_I6@+U+LfuxZ%_UgR5UTnY2@cr@mc=dF%eSPwG|KaxV!{X?8`{%!-uWLJ}OYZIm
+z4p<XONx%ZBVFhhN8ba4_*+7R{l#wve7^)EMfMD0LDufC&Or3(`34v#!RoDXbrb2^l
+z+YiC_FeZ#}_Uq--=EKbj4&L&CclZ=<`c#q6`^*0e-+!aE3Zly}f-cCIVl{Q36iGPs
+z7EdAJgaq24N~(67`}n>fNgQd`Y&dUbjn#yXD1i@ASn7HCrGq~k{pT+w4r)i}ZMQ_|
+zY{e92GqDIoP?R!FG1?qkCdbg3jgqTi96GVRg4DC~gw8=7QMK6Z=St*q;>-`$H!kk?
+zzCAwUAjixMSd_}7fMQ%6lMb^i=1~#3*-0BMc;-5PDMrq7-6RXrH6g?F#&oI~d#0Y#
+Gu*X;Kk<V@b
+
+literal 0
+HcmV?d00001
+
+diff --git a/tls/tests/data/ascon-testcase-12.sol b/tls/tests/data/ascon-testcase-12.sol
+new file mode 100644
+index 0000000000000000000000000000000000000000..f4d73252bab48ae94884ae861f32edd9279d427b
+GIT binary patch
+literal 650
+zcmWe<W@f1MI{SPU0~EYaU0(9iEb@!D-;=va+ILEBxvbbF_p*Vh&syO6;a?kX_+4kZ
+zyk@c0g4DXGDW$hXls(;kxN}W)YO)GkwN0qQy7`glt;0v&-}oL<b9c#;Z;2Cky=nC9
+z%i`H~L&J^z*_3TQDZJr#%QDJYJY~f9=5H;YU@DI00!B`Ac|O*|ygM1MD9TiS%SujC
+z_${cY81`fL7H=W1b<ckX2891KQ$D(MF7uynjf>8GxBn!}sLMP3PnRQ)Fw;4`$jf|8
+zhI0G;J)W&Ob+GTX;lnEvEvMel7FS$ZbZd&cukT9N`OC6@r9Jz3@~_49wL2286`{L;
+z=~woJD<3$5w=Vf`alT;nrviuBM}j?i9{$#^oh#~d<VW$Vn8^~w$G>g0+iUjV<-*5}
+z;oo-LeSbV@W8%Rmc|LotxhbJtN1YdlOGKq^nH;fJ-81w3y&X*RRrWYBE==BEd~M&<
+zT<gzQ)$c7@^jWT{I8|@H1-c8EZLd`@`%jg0PKftYyd-z4e)$UbioNTK45mLkrc|l9
+z<x}!GwWAT@8BOMCf{ew7%Yt^zh%QQ8X3@BzqAS+Pd+wEK^2@qq|30wX#W&;mJ-eB_
+z(QL)X76{)z!sYK?J54g`koD0A4;7a5#<Xx965sfjHL(`m1uQEx!W2^Gn=&q+C%bS(
+z|DNFQe*y%)idN3kv^X?{VeY>NpSeUG@_)bk#qG2vIn;?cG5BKYXQ4HPxw&C6C%)9l
+z%Or$atIum%ZNOx#^6VDRGKX8`SC^!S8T*t~3x8d4b{$W6(gRJSvdrm^^&?&%?ferE
+F1pr3ZB{%>8
+
+literal 0
+HcmV?d00001
+
+diff --git a/tls/tests/data/ascon-testcase-13.chal b/tls/tests/data/ascon-testcase-13.chal
+new file mode 100644
+index 0000000000000000000000000000000000000000..f42d1b28a495e291bbedb6f8d6c1263fc087585f
+GIT binary patch
+literal 560
+zcmXAlFK-q>5XMg-t_lT7&A6I3CBY!@O{!W9mdx(Wy|=u3v)7%uZqJesu+$(BB$x&a
+zrh)`TLihj#R|Wk9D1sr(zEzidcK7-7`?+`j_}BLza<TL2(XGpGUk>hFU%BT`UcTFV
+z_R2L~p%@`Bj0;GbBOrHxPEvLdRA5Sl@(N<u5a>YAr#wRH0l`sBr_{k1L^Fx3>N&TE
+zcB;ho6L<q9=$psy|GobEVsXtJJLpJ!4sL5E1U|8+Nkd|L?=8QBFizDD<|#2uI8g?)
+ziaMaSL9EGX;I(yyem1$*EohxAX$S{@j_AX~+dHn&j7z(Ygrk5cVcn={J0UQeryzTs
+zF)u4PG&!eY2!vt}T`CMXCQGS{wWhB#inMOIQF8E`_+a<r+dJ3izg^Q>7@y1`0-YHQ
+zvPl&NsyQ=R39l8e84;`On<~S0s$mH1aY7fVLhUjZ8`mO;eM~d5$-v|J#ohhOub-o9
+zOe;j%jw!R<k@`%gT#=L^_`%GHpQdHYqo$T2nbAO)wI<_eG!t9FO0FlWWU2K-WoTY>
+F_8%aN(N_Qf
+
+literal 0
+HcmV?d00001
+
+diff --git a/tls/tests/data/ascon-testcase-13.sol b/tls/tests/data/ascon-testcase-13.sol
+new file mode 100644
+index 0000000000000000000000000000000000000000..f11e1d0d076192c78cd9bbb253890cb2259fcd18
+GIT binary patch
+literal 655
+zcmWe<W@e~!(|>%M0Se}Ju2oc%trwp!f8`CE$U*1Qn7vkh0vZ{;u_wifZ>-+(Rnp73
+zO5>n?+w?y@DswXmPd+JXx;LXkXsup!Ia`Ilp`p){zLz(vb(3u8di>tIzQQj~(tO?=
+zKlk;yiERt#TfMx|xh3n7!0Z2~=gRfmi1K_{bX6S935>!U&Rq@rvdVtR&RfP+Q+B#d
+zHL{x{@NnIK%}?>irmW@ay;x%=^J=@vi}U?D+h_J3in6;_IJIcUsulB=vj<E$bmV$}
+zhDc!Rqz(U5FMev+-1&C{<GNd&&m?42gwJ-jPEHA%^5vk`c@II!o2;fi-L?<pzOZ~j
+zcLI~D;N$phau;X&Z+;QsU^v5N<B3GmlNSY__k<*#xU#jye`<yDfv(QoQT`hql-6JT
+zqVs=F?aUiN6V0t=aa$(;lyBO*Q`tS*O-<En?)jBPTaD(e*xu74&(+28eXDPrljqEd
+z9Fq;ab{_bbw%v_yGTX#UYK-jYPGII<Gk;%6*@CvHhqvx-RS1;-v7k2JP}=R@L@mw_
+zmCvs3n!QIUBR%eY@~W9mPYP|lL*Ca#%yTgfst?#GAW(1X%snOdLz#>EtBQ3;ILz!B
+zFC>?r_Sx~}?wq{9Mc%$Q_|;BN&Hkics_XRhUFw3E#kU+Qc0NIO0?W)=#tH4u#oJCE
+zmn!2vY4-lln)ved$GYvS+(o|lay{q$v1()L+_;$1sj;@5Z;r%I-OjI=dH(sob2mRN
+zm{i3jamSnM&>z9)2NLIb7p@UG8fSZb;*?J%VaG1n6xC{nCjCDh>~Z@3>vPYq_*@db
+Lx9onY?D1*<@arzN
+
+literal 0
+HcmV?d00001
+
+diff --git a/tls/tests/data/ascon-testcase-14.chal b/tls/tests/data/ascon-testcase-14.chal
+new file mode 100644
+index 0000000000000000000000000000000000000000..3aa77b6f9c261a399a9412cde020f089e130070b
+GIT binary patch
+literal 580
+zcmYL`KWkM%5XEo3SZcs-B!$gQI>C@&sRRqrLfh<pJNxeVc4wbE``-07BG^hGUqCGF
+zEds$J5CVP&ZNxU!tI`P0-XOvj`{(SL`JLI^{qgeq$=>GS^P?9RuMhv+zrzm>+^1h(
+zw%>pDO&}3S9we=TK%fPhNQ}F12sY|1^me%%TZkh#v>ALRWY^Xg+eykDIv|G9BjDRN
+zD-tRQf-G2FBW5%u+uOfC&Ni2~-uVV%ipXW(SavXC(K;S6sDZ6}#x-Ubtbm1iMqBh`
+zb0H~J!N6(Qg;zat3qwx<Yhe@88p8-{8v>3{5aagVho@K9j}Cm(7t>8Dh?H~6Q&;1J
+z+k%!+u8IyM6T^Q|B_j6373fKF_u!d|%?&^7>_E3FK)Uo}I)8lj6;Hlx`6ecwPfk*7
+zScuk8&UsD)cpE8@MmSLEC&?_WxC9h2#13Vask5Cj`IO@{l$#y|XGQZ+A0G(Svh?lo
+z*3sqh&r{!Yb%6Wz)u>uyQJ{Y_8uS93%?s8Vpdn>hYNl?Y#<5ye*B<R!g>|bF*4{)D
+NR4C&H44Mo>{0okP)8YUC
+
+literal 0
+HcmV?d00001
+
+diff --git a/tls/tests/data/ascon-testcase-14.sol b/tls/tests/data/ascon-testcase-14.sol
+new file mode 100644
+index 0000000000000000000000000000000000000000..671b8fdea2adf46033c64b46f56ec44e02fa1c92
+GIT binary patch
+literal 675
+zcmWe<W@czo7tJ$efP!`B8LKjz{qCCVt5(<jy=HsKnp5)AZMt2obPuLyUyx=q*kxg5
+z6V~kc{lUu~iB`XYhQ~dp8fOO|l0Uil$xo3d=du#Zk{8Q8`}y``?U%}zM+}#W7l%yu
+zKfGk~%e49m9?k25yXU;!n)&WM@8`~gCv0A?=22O9MIc!m%^8dqinaIq4T>KhWPWvL
+z$JvF8q&_{{Xp-Ueg-t(P-X%T$Z_j1X-)|G6XI||K6Io&}Slq<VShq&uUi^1KcK7#3
+z)-ZERUOBR5)86ncCwnSZ6)|aS<UBHOh7m{p1FwY&Hg=1Wcs6vmPe1wl#P2|#J-v&T
+zs7(>OJ*^@T-5E@)D{4INwH_#05V?`-2}{a01E>4vK5}suUH0gVQU9Sb=_&h4PuoY|
+zKL5zuS{L~&a+<m64hu~WPQfk4E<sECIlSB4=Df(>cH{P`uW?^rY}zW^qo;D2>skK-
+zF^{muX|q$lzCJ9$yn@B|&Z+AyO^*+S-*~xW<?40q=+0o4kkL8M*q`|{Nc+y0J$m!b
+zHGc9*ThQ=CS}SIOk>}>i(;^BFs(w9H_;$mWfAjp3tT!y<Gf_ESt}bxoa`%#be8zMA
+zud_&hlIZn3D8BCEWsS_2J+pRdC-zu;s@=Od=s}Ovy{EVJOX@f|QkU;NTJico=)X5w
+z&N&mC(Vf9E=h-%|1@G-zq9TG1uM?;^A?f-5>9o{^KlX;Et#dr4cDK@Of*Q;EBzNa>
+z^>;rGZM|;Vl;~?LEhCg+VzEQUE^vz8U-PyLrX>zt^Ur*3nkX{iUcvWwqE^Pb0jt_L
+gmc4zH|2c5}%v0OGhQ&TsJHRWqN+725Y4wHq0C_Jot^fc4
+
+literal 0
+HcmV?d00001
+
+diff --git a/tls/tests/data/ascon-testcase-15.chal b/tls/tests/data/ascon-testcase-15.chal
+new file mode 100644
+index 0000000..ce00ecf
+--- /dev/null
++++ b/tls/tests/data/ascon-testcase-15.chal
+@@ -0,0 +1,22 @@
++2ëÚﬂ[¨®VˇÄ=œ◊ ˙'É
++Üü≠©3CW<ror of my soul, as
++my soul is the mirror of the infinite God! O my friend -- but it is too much for
++my strength -- I sink under the weight of the splendour of these visions! A
++wonderful serenity has taken possession of my entire soul, like these sweet
++mornings of spring which I enjoy with my whole heart. I am alone—G™ùEÊP< the mirror of the infinite God! O my
++friend -- but it is too much for my strength -- I sink under the weight of the
++splendour of these visions! A wonderful serenity has taken possession of my
++entire soul, like these sweet mornings of spring which I enjoy with my whole
++heart. I am alone, and feel the charm of existû`‹smû‘<arm within me, that it might be the mirror of my soul, as
++my soul is the mirror of the infinite God! O my friend -- but it is too much for
++my strength -- I sink under the weight of the splendour of these visions! A
++wonderful serenity has taken possession of my entire soul, like these sweet
++mornings of spring which ÅÍÅ*”@\<e forms of the insects
++and flies, then I feel the presence of the Almighty, who formed us in his own
++image, and the breath of that universal love which bears and sustains us, as it
++floats around us in an eternity of bliss; and then, my friend, when darkness
++overspreads my eyes, and heaven and earth seem to dwell in˜1X<or the bliss of souls like
++mine. I am so happy, my dear friend, so absorbed in the exquisite sense of mere
++tranquil existence, that I neglect my talents. I should be incapable of drawing
++a single stroke at the present moment; and yet I feel that I never was a greater
++artist than now. When, while the lovely valley t
+\ No newline at end of file
+diff --git a/tls/tests/data/ascon-testcase-15.sol b/tls/tests/data/ascon-testcase-15.sol
+new file mode 100644
+index 0000000000000000000000000000000000000000..c72add0a1263fbd33c772dcfa5fd667b25f8fe2e
+GIT binary patch
+literal 1745
+zcmZ9|`6CmG0|0P0b40E=o(UnmoH@dl<({wHSI%6KToGzHW{70OUP#M`zLQLd=jiJg
+zbIvWtXs(9|Q|@E7_sjREK7Yao$j;8{u8ic(VEI2SY*Vbj*kB&pVi_l-5%HFIE8jX%
+z$e#7I`UeQTms<XmO-x7a^a6K$n5)C|+8l}Wq2_CdhTc_V3Wh0Kd!NtEEGh{n)j1Ad
+z>k!|3|Fb##;;2?E^lk-)P_hlC+J(dEZ(Z74)H&#O3iFN6B{H44wIQRr&nHJrVq>jE
+z71WC(56Be0zPL~~BVN*qw?EcQAO5l)<GvxlI|z8xeE^_snFQE#EjreYIVKv!JUAFc
+zbrCnZP=6(~?m4;cH}lDctWiz&Q3Ci*Aup!vv^&AR=^6eglE-?c3oOy%Ab;@s`@jS)
+zvtX(54CHXd!MTT2jnM-7&w4heRf(~l$tPX65g-;K-_%<^TPoQ;cs)n*$bmRMe!0E-
+z;BOE@XH`TqPxM$z$_WM#V$@*$G9+~ZJQ#)_dQv%|Pq|R}g=)x;{k8Jw<f}D8z~6FN
+zd(N@qx$K6qU9cMIcUvJBEvhdkD&+*^4E`f}txSX(^iRRkKZgo5TuM>|<=%~&rW9^y
+zOV$kyg1)klZMeB=O{Jn62F&zXUN>aH+Z_!NsMDi|0;ZPB+`02VwA-)UTsiFu;l%5Q
+z`cKPrw<X${#6xNUMerBEkoals&<rX3BFD$jv?=I|8RaB;38v0i29At!iJ9r+k^bse
+z9GxnHESAh*;56qqYIn_>=w>?P+j3AGA!ldT#N&vT@CCg?K908eb}JUX`OWmhY#axo
+zpjyH5<_kKuWfqv#lY0hX(o)ENNz6-z${?v-^h5LHILA52P&)+r!tOTOS}Uk9Im4$l
+zezz*$wsq`my|<s)xMbU0`%2Y@@A@I(aeA9;ikU3xRk&+*gD9swbrQ;Mo<QtTF;rh_
+zo_HhJqsI9T@MKTyo^fO1e8BIyZ2W9uL7^(hHf_*Ab*a;Xe8E=xN1VDJa4x|Pta@!3
+zf#0#Z4}u56K(8f#$xfHyEt*|~|G>KvIyYyzR1mVkz;p`C`!TtbxBX#U39<v+C)J#t
+zCJ3Zr&VOhO>OqJ0N8Wj+uipPNYN>Kc2~ikmixvV0c>s0KkJYN)tLY!_R?f2bTUex4
+z=6SjVGmo^<H)SkUv3zC-SjJd+f7<N-f{ryW%{pThCiQ!ahLee$>G$1=XsV{n(UyMO
+z{slGE2%UmjNU?h>&{$Qs_DoZTH1erK-j7QpGqKQ095$X>k2kBe7|$u2JfnNVJP}oQ
+z=Y{wi+!{o@wj6=k@uurT?gRuw%Lm+CqKdaE)w(Xc*&l9vB2~;aagm1hEg#sL_(_DU
+zkKJfv>}F<_hFR?tN2=h-aZN*F7LivE3)XXJ?^3$zh6UDe^AW%2vJ2IogpGO-$wj<w
+z78wa<Tqm~{Ny92<W3hUcCl1p1JMp;v0|{f$x>~<8J~MztcYsR<7d^aj^xqxddSpYD
+zIh=U0_XsH%3@+NXRNPRidZMrg9ml08!bPCOK~gC#OU34Pg<e#~I0MxF{IiX4tOg@D
+z$#k7YR!3A#W^Q_syN$!q<<)X<>A?Bv*-<vY%RwJ?5Bu0<8UV7g>WyuHebaB5c<)+d
+zpwVLrq(DQGIY_1Vqyj0W;=NbU>$P_<*L=mhV3N}Fe`|fZNQ?oQ-*cu`W@;0rKn=01
+zc>OgF$>GdJSj9(fAvA~@9^F@*rK>fiM;mg5w_2h9(v~>2IH&B;pfMEXnlLA_>65$;
+zCTvd0JnM47<W+v3?8^q=!mn8B6mjER=}QZ;Or5f_@OV2Q-+(jXdD)*nH+(%p<2zO{
+z)kAXvYQN`lNDMS8?}`vUTDgT9egd6j!LyGB+lNixP}lt{?3T&p1`)2QHbHyI^1+%p
+z>t(Ol3ilv9JZ+jW@1xeD#_o7c(;G|xc)71~ELQ$<;Jp&RHX6@Dt6jpw4-Z8z+3bG@
+zGQJE)P~aU`9x>c`mCR2rN`yUqQ%=#B&+GObUY8o>NWbj{o{X}bI{-ZIFMZ3AcvEot
+z`B}&EsaQnsie#^-zdhK?R`cm+e$A)+q%<d}2urlEY5I}ifu$(-*IYL48JbU9r@3-F
+z75PN$?2oal_Z?7&D5lZPPA9s{hPxV|_gwj@x0XU5@NPw^k(}jt-Drh`(koP+OzM_I
+zUWbeBHi@9Bdl_AP*3HrozhpEF>0~9Ke&I1oUG*dxOoWdpA~Wz<TU$4Xh_<By)9Q^t
+f;AJ}K^rv^g0rK;&UA_u29trH;Dv=QsBD3%>0EJQ^
+
+literal 0
+HcmV?d00001
+
+diff --git a/tls/tests/data/ascon-testcase-16.chal b/tls/tests/data/ascon-testcase-16.chal
+new file mode 100644
+index 0000000..02e5a03
+--- /dev/null
++++ b/tls/tests/data/ascon-testcase-16.chal
+@@ -0,0 +1,22 @@
++4(µS]|rmÔ#AÙ‚ﬂl)÷xÎ¿Ã‚X∆ÜQòDvely valley teems with vapour around me, and the meridian sun strikes the
++upper surface of the impenetrable foliage of my trees, and but a few stray
++gleams steal into the inner sanctuary, I throw myself down among the tall grass
++by the trickling stream; and, as I lie close to the earth, a thousand unknown
++plants are notice⁄ı›Å‘L®IDul, as
++my soul is the mirror of the infinite God! O my friend -- but it is too much for
++my strength -- I sink under the weight of the splendour of these visions! A
++wonderful serenity has taken possession of my entire soul, like these sweet
++mornings of spring which I enjoy with my whole heart. I am alone, and feel the
++charm•ÒñVß(ç2D absorbed in the exquisite sense of mere
++tranquil existence, that I neglect my talents. I should be incapable of drawing
++a single stroke at the present moment; and yet I feel that I never was a greater
++artist than now. When, while the lovely valley teems with vapour around me, and
++the meridian sun strikes the upper surface&5A&’´qUDupon paper all that is living so full and warm within me, that it might
++be the mirror of my soul, as my soul is the mirror of the infinite God! O my
++friend -- but it is too much for my strength -- I sink under the weight of the
++splendour of these visions! A wonderful serenity has taken possession of my
++entire soul, like th÷≥¥§ò`Den, my friend, when darkness overspreads my eyes, and heaven and earth seem to
++dwell in my soul and absorb its power, like the form of a beloved mistress, then
++I often think with longing, Oh, would I could describe these conceptions, could
++impress upon paper all that is living so full and warm within me, that it might
++be t
+\ No newline at end of file
+diff --git a/tls/tests/data/ascon-testcase-16.sol b/tls/tests/data/ascon-testcase-16.sol
+new file mode 100644
+index 0000000000000000000000000000000000000000..a208517c8c738b51b9513d382821e6bd0bd15900
+GIT binary patch
+literal 1785
+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
+Sx<(sHBK?k?5kLpZ%>MwRK40|!
+
+literal 0
+HcmV?d00001
+
+diff --git a/tls/tests/data/ascon-testcase-17.chal b/tls/tests/data/ascon-testcase-17.chal
+new file mode 100644
+index 0000000..b34a7f0
+--- /dev/null
++++ b/tls/tests/data/ascon-testcase-17.chal
+@@ -0,0 +1,30 @@
++Ó›‡Æ'U–fÌ˛br,ØòÎ≥çª≈º„e∆Y”h of that universal love
++which bears and sustains us, as it floats around us in an eternity of bliss; and
++then, my friend, when darkness overspreads my eyes, and heaven and earth seem to
++dwell in my soul and absorb its power, like the form of a beloved mistress, then
++I often think with longing, Oh, would I could describe these conceptions, could
++impress upon paper all that is living so full and warm within me, that it might
++be the mirror of my soul, as my soul is˙ùÑ4˛lΩ”rnings of spring which I enjoy with my whole heart. I am alone, and feel the
++charm of existence in this spot, which was created for the bliss of souls like
++mine. I am so happy, my dear friend, so absorbed in the exquisite sense of mere
++tranquil existence, that I neglect my talents. I should be incapable of drawing
++a single stroke at the present moment; and yet I feel that I never was a greater
++artist than now. When, while the lovely valley teems with vapour aroun◊Ãƒ1ﬁ%∑<”h for my strength -- I sink under the weight of the
++splendour of these visions! A wonderful serenity has taken possession of my
++entire soul, like these sweet mornings of spring which I enjoy with my whole
++heart. I am alone, and feel the charm of existence in this spot, which was
++created for the bliss of souls like mine. I am so happy, my dear friend, so
++absorbed in the exquisite sense of mere tranquil existence, that I neglect my
++talents. I should be incapable ofâ·àŒ∆¿â”tress, then
++I often think with longing, Oh, would I could describe these conceptions, could
++impress upon paper all that is living so full and warm within me, that it might
++be the mirror of my soul, as my soul is the mirror of the infinite God! O my
++friend -- but it is too much for my strength -- I sink under the weight of the
++splendour of these visions! A wonderful serenity has taken possession of my
++entire soul, like these sweet mornings of spring which I enjoy ˇ;í–øqÔ”: when I hear the buzz of the
++little world among the stalks, and grow familiar with the countless
++indescribable forms of the insects and flies, then I feel the presence of the
++Almighty, who formed us in his own image, and the breath of that universal love
++which bears and sustains us, as it floats around us in an eternity of bliss; and
++then, my friend, when darkness overspreads my eyes, and heaven and earth seem to
++dwell in my soul and absorb its power, like the f
+\ No newline at end of file
+diff --git a/tls/tests/data/ascon-testcase-17.sol b/tls/tests/data/ascon-testcase-17.sol
+new file mode 100644
+index 0000000000000000000000000000000000000000..f785eac11957a15c001e271a1c3680e32577697b
+GIT binary patch
+literal 2500
+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
+Dx|z(T
+
+literal 0
+HcmV?d00001
+
+diff --git a/tls/tests/data/ascon-testcase-18.chal b/tls/tests/data/ascon-testcase-18.chal
+new file mode 100644
+index 0000000..2886c38
+--- /dev/null
++++ b/tls/tests/data/ascon-testcase-18.chal
+@@ -0,0 +1,33 @@
++⁄ıG˛¢}+‰T'64@0<Œ'Í◊üy˙‚ãGT÷ the
++charm of existence in this spot, which was created for the bliss of souls like
++mine. I am so happy, my dear friend, so absorbed in the exquisite sense of mere
++tranquil existence, that I neglect my talents. I should be incapable of drawing
++a single stroke at the present moment; and yet I feel that I never was a greater
++artist than now. When, while the lovely valley teems with vapour around me, and
++the meridian sun strikes the upper surface of the impenetrable foVˇOõ'5µ÷ of my soul, as my soul is the mirror of the infinite God! O my
++friend -- but it is too much for my strength -- I sink under the weight of the
++splendour of these visions! A wonderful serenity has taken possession of my
++entire soul, like these sweet mornings of spring which I enjoy with my whole
++heart. I am alone, and feel the charm of existence in this spot, which was
++created for the bliss of souls like mine. I am so happy, my dear friend, so
++absorbed in the exquisip$YvûˇD≥÷e soul, like these sweet
++mornings of spring which I enjoy with my whole heart. I am alone, and feel the
++charm of existence in this spot, which was created for the bliss of souls like
++mine. I am so happy, my dear friend, so absorbed in the exquisite sense of mere
++tranquil existence, that I neglect my talents. I should be incapable of drawing
++a single stroke at the present moment; and yet I feel that I never was a greater
++artist than now. When, while the lovely valley˚qˇbﬁ
++ú÷ bliss of souls like mine. I am so happy, my dear friend, so
++absorbed in the exquisite sense of mere tranquil existence, that I neglect my
++talents. I should be incapable of drawing a single stroke at the present moment;
++and yet I feel that I never was a greater artist than now. When, while the
++lovely valley teems with vapour around me, and the meridian sun strikes the
++upper surface of the impenetrable foliage of my trees, and but a few stray
++gleams steal into the in£VËåá=◊û÷ole
++heart. I am alone, and feel the charm of existence in this spot, which was
++created for the bliss of souls like mine. I am so happy, my dear friend, so
++absorbed in the exquisite sense of mere tranquil existence, that I neglect my
++talents. I should be incapable of drawing a single stroke at the present moment;
++and yet I feel that I never was a greater artist than now. When, while the
++lovely valley teems with vapour around me, and the meridian sun strikes the
++upper
+\ No newline at end of file
+diff --git a/tls/tests/data/ascon-testcase-18.sol b/tls/tests/data/ascon-testcase-18.sol
+new file mode 100644
+index 0000000000000000000000000000000000000000..54cc53017ca3487c63078b108bbd17779f60535a
+GIT binary patch
+literal 2515
+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
+QcUiw_ti;+tue;m)4@BkAYybcN
+
+literal 0
+HcmV?d00001
+
+diff --git a/tls/tests/data/ascon-testcase-19.chal b/tls/tests/data/ascon-testcase-19.chal
+new file mode 100644
+index 0000000000000000000000000000000000000000..0ab19aea36e704217e2acb10028407cca8b10f3f
+GIT binary patch
+literal 3980
+zcmeHKJ&Pqp6cwKcTgaFh7~KVfMc&SW7-_T^EE6r5=$c4%_wCo^tB<y-`n5fQ|6##&
+z5%nL482Xi&8JGyB!h(Onz;mnnIV?D{?`@<oFvFX9U41{!J@?eT58nUgr|<sy`JK;x
+z+}(QR(Y^CGo`31N8$Z1EaP{KLU!JTyg_hhz?6ZkXDGYW^)@+$_#|dAI%vre*z44nQ
+zhf^Q%Cykw{J37OQABBlVlRGgpcEK`rtYbdKL+wc0;CW5jH`Fp)F{|oMM<=%U6O%Ig
+zn#p)PF$vZ~UN6Q+ov4niGvnP5<yESzNpl#8G?hq|GoBZ3DNv{Tep*W~4Z@%{8urZ^
+znUStih!u<#XAJKj4<?z6EZHMhL4qTz9JR+2dlB9mzI8@Io;Q~3EY`EO04<5*)FGIL
+zDoLZ(y{>=(j5Se@fJ$jf_`r85#{gtuNmA(}0QRsI96sJI5KSyz7N8c7JB}n!XxbDo
+zq5`_WO=9xo!+1*Xb?ggja3ZE{*s+~xr>$i~%IwlyqMh!;5J|@{pdfB8jFMN7xoHdx
+zrUAb>f&!`78u}gqq#?E%bwXNl+PI!Q11L$g4c6$*jNb(GnA2SFYRHJX<xvdkiGYDd
+zBq+JIfGUUCmiOX7`#KLgqI75YI))J-C$_C>!sx-I0MdzT;BJA01`R6YCf`I;Z>^9L
+zZs4Ini3k!bS;JJ@fa=cPlu)z7L%bOVIBjU~TY%`PxBBs;&+pv&{oCJ8R!^1?#}6r?
+z5_1QY5EZz(gzC5w791`sp*pgJ0Q9mFs%I)8U0Oo*3?-yXOQ=vnv?Rb~^hGu`dL0fN
+zzXe5M4?2i46|Ab^{CrPlYjOsS#}LuP{}4?jFm1aqc_VymwKHHkx>3|lm{+5X@G7Wi
+ze8Z`Zrdm28g6I2Qfwt5+6>_xTBTV95iDoZ|ixgb6*Inz(rpxFB2&!nGLnecGArVQi
+zRT+nto7+qxsYDvO*(G#i@CLGx&}PD;MNcav4{*TIG$1+S6Ks|~F<G@X=mK3)hS?X?
+zfHOn-|9JJ&Hy^)y`s>N6q<tJWujOSgFUNCJ{W~`ybcb_OJ)N8L^?VRF)zi6&+u?9-
+zs(FyOikoyLH}fQ{FLOZ=exVyKL)_5&tH1PqqvO^~r=lMsW*F8@l0!W0Z!2iS4s9v@
+zQ4|JK0Xtk9su>wq4tfvAWk4!N$}pksyzq7Zh5zbg6)~S6jOBzhmD-<1!%Bxb6PH8s
+zpYg5nGJ4z#%}u(05iZ@nO>%D<{NTk9$PE~@paI1oq}gxK=s1PB!}u*)y}|V<Hb)lG
+z*vn4pF`qPY+s`_LD{zNtC-`)e?y51!Yb}yV7<mxMguw~^^cE2GAtgYCvrA6b)8X}W
+zc+7P8;Li`g|KP^!zu>+w|DEaXT7G4Td2%%PU(0U=l}u2pk>kbETE->OEscdtCKc>C
+z*p{$tErXXj!&7XX&`i<KGR$E~-C%)O(|zm)W7+1;WV*vZxXg8Bv4V!y0qbg?MMu~3
+f35;U0%3+x5A(*|EbxC%VvNA%$t=W~`1cTh)uKJQi
+
+literal 0
+HcmV?d00001
+
+diff --git a/tls/tests/data/ascon-testcase-19.sol b/tls/tests/data/ascon-testcase-19.sol
+new file mode 100644
+index 0000000000000000000000000000000000000000..9fc9ddf6ba0ab93a29310e56842a770340172115
+GIT binary patch
+literal 4075
+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
+K9foU&5B~$b^TxRV
+
+literal 0
+HcmV?d00001
+
+diff --git a/tls/tests/data/ascon-testcase-2.chal b/tls/tests/data/ascon-testcase-2.chal
+new file mode 100644
+index 0000000000000000000000000000000000000000..738f4a3eea5b9c5482714103ad4b2ed34b5f4c47
+GIT binary patch
+literal 165
+zcmX?lc8RC2i{W;Khy8zDN~fN9v3FM`Qv)kUx$cZSVTL?~+*BQfl8nR>h0GF#+|2Zh
+z5^+(LLmRpm?H6W9P0TG;C@x7&%u&e9E6E2cOZ^)$Gp*5o*=b>h%v6Qsoc!Wc1&D+~
+zYGTp7fCSYj$*e^{oj?s~nR%HdsS57-DT)gI3b}oydhM*wZ}18;DCDK4=cFbBt*hiJ
+LNz6&jD=7v5RmDEG
+
+literal 0
+HcmV?d00001
+
+diff --git a/tls/tests/data/ascon-testcase-2.sol b/tls/tests/data/ascon-testcase-2.sol
+new file mode 100644
+index 0000000000000000000000000000000000000000..7eddc46d5c99377365cdfd8b985d8d6845c343bc
+GIT binary patch
+literal 260
+zcmWe<W@gZTv3FM`0~GA8P}S%3m^nFi^Mj)kcQ`xpB^>6vG4bz`6WL9T*Y*DjIQFE9
+zqv>IM>9Z|cb5qu-GJzE@cU|${pOJfhgPpga>4bb?X?N4#s<8{Q(Dg7GM~AaUafV2!
+z8++X{UD;;tlEmCP=g@RhrDitEMMmxA(Z&ksdYJqDIPYfUpT4)}iNKwm?L}2DSpHsf
+zu6Z{@a}Lv4Cy}_6`Zap!dRU&N2~K$UUgZhbJ!@UXbiO<HwoEy1UbE&8W6=)rY0J$c
+I*C+A;0C8eq3IG5A
+
+literal 0
+HcmV?d00001
+
+diff --git a/tls/tests/data/ascon-testcase-3.chal b/tls/tests/data/ascon-testcase-3.chal
+new file mode 100644
+index 0000000000000000000000000000000000000000..e75a27eb694507d4ec97e1162dbbdc8eaa1d7595
+GIT binary patch
+literal 235
+zcmX?Ltuaq2G}G{)i`nmhhsHJ^_BA#ymsd_He186&B13wrLVlV;Zlyv=QEF<jjzVHy
+zib7Ipi9(`6T57pMaY@mGe#b=~NjDZNG88LhmT;xz<R_LCD<l@>mjYFm0>$!xdK6Mi
+zQj79b@5j78`{hc5B7;InMyf(mPG)g2$n@g;(wt(2oXqT0h1|@%R6PYxg_{SbD&@;M
+zFe@^o=9O4;fo!czEdffTrKaWpbti(@d8uWoMG9U)W%qs@^bP?!px7GhKA_=wIv_Wv
+S6=kO8rRXS>0|gXP5{m#$Xjn-A
+
+literal 0
+HcmV?d00001
+
+diff --git a/tls/tests/data/ascon-testcase-3.sol b/tls/tests/data/ascon-testcase-3.sol
+new file mode 100644
+index 0000000000000000000000000000000000000000..f6cf2739626b798d10be5ae552fdc59449406685
+GIT binary patch
+literal 330
+zcmWe<W@fPcu&=S10SY?5FdAP!f8uA+(sxoi&yU}%u<2dgwC#Cx3)|i~g*Dn<RmLn8
+zcVyQ{{}HR-a$(7(scGV9CNTbNVEvVyH7j$4NLSx(lYJ5zRk1(!CeM9kQk}5ky2pI(
+z@6GRLP3zu!O>f$roaPOOr<S6dz*M@}cwun3e~Ptc<E^_vH>Pi2e}P~0%r2%sU(d_3
+z&G<4=)QQu0e^SfbFX!Lw_?o;eDHz=Z=A^JU+sZAstypStM}?nbT3)!Ik6Y5$ZCmE1
+z^Ij7&&j{$(+;{DWn76%@g=)#8&b^zg&`n_JzLJvGlKf!4t)cQA%fokWFy!stc>3$J
+gt6}d|T(n<VuCi#Te$>AE{lotpC!810Wxu!<029-W?EnA(
+
+literal 0
+HcmV?d00001
+
+diff --git a/tls/tests/data/ascon-testcase-4.chal b/tls/tests/data/ascon-testcase-4.chal
+new file mode 100644
+index 0000000000000000000000000000000000000000..7a10eef5918739b76ff22885ab93343b0e646498
+GIT binary patch
+literal 250
+zcmb>3qncq<d#vep<L7xPSKX(nu@>&B?_OiBBqOw5g(1HvCq*GKH$N|3p(G<!p|~V5
+zC%afjAu%sSA-yQSTp=wnH#7Tg`IbM-#SJP9Ir(L&Ih6`!i8(o`l?o-Psky}p<(VZJ
+zK#_v{(jtY#qWsc*Q@%_xT0g~7g`uQUAwNwaDJQeI*cxOa7tn@09fjOVg|wo~)VvfO
+zh4KuWd39~BA2z9~Fyv(d)n_CYE0iQ=r{*aX<QEsG78hsc=Yb5#t>jA0E6I#C)XWXM
+RaW5KZc1cdELOFid0|0prU?Bhi
+
+literal 0
+HcmV?d00001
+
+diff --git a/tls/tests/data/ascon-testcase-4.sol b/tls/tests/data/ascon-testcase-4.sol
+new file mode 100644
+index 0000000000000000000000000000000000000000..687c51a89c7ccfbcbc0c344067dc2a29456d38f5
+GIT binary patch
+literal 345
+zcmWe<W@d0uV=dgn00pe+mObgOHmy8ewYlTrQ}<Lx)hl`}^?Ki|u6&YFJ@e&8`UT;J
+z|0bMwc_PH`H<(`JpKo*UtvH$?j0;wN?R)1?eMaMB|9OiIJA%#?f0b<cs#Y#O<(=BS
+zsIyfn0e`iU<HI<F9T`<OF!6*G=|x1K8^RQ%@42bSn8)J8_5BGyPciE+kDC&%k#;OC
+zeBEJ(I??ZsEhlx_)xMBa|Mfgu{^6Smzjl2Q_<?Q+bN%uku2YM}Rpj?b%4{*K-@Y$3
+zK174zw%N4eDQ=(tFa5Dv|D}`F+n=_|zm4x+R^#ty4mRF^ZU{^K{~!%l2cOQ>C;#(A
+u#gxS8*MDeFj_cuJT%CW#;i6U3%Udd`Y~f#}?oTV;_q6!bo~s)s-Uk57kBJEY
+
+literal 0
+HcmV?d00001
+
+diff --git a/tls/tests/data/ascon-testcase-5.chal b/tls/tests/data/ascon-testcase-5.chal
+new file mode 100644
+index 0000000000000000000000000000000000000000..653ecf83f36c906b85746fe67d41fdb7491ed6cf
+GIT binary patch
+literal 265
+zcmW-bu}T9$5QeYy&`PifqEjeWczFsN#m+_$Mdt42$dJvf?(7;1UqM?1do8RKEKML!
+zkWMTuBBG=cd-txL|Np;lc2<8c-|nZ2qs{N9*=%ievb;UL?shkB{*E591Zu}5RSs$a
+z3$?DG3RuAR2<YN0u(Bu6t-Y7K@yf?nmgImjv_VlS2+|ij6gV{~UI86}SkEO@uj_OF
+zIJtUn4Au=4Y~3<hluEB@v#t%3=FM4PxAVE6<HOrJOB4+ldrs-F$7K%+LKo4ouR%RV
+m0ED>0=Y#$E&+$?x8cIj#<KNNLN(#f;8r24)V7O1|fd2s=R%P-4
+
+literal 0
+HcmV?d00001
+
+diff --git a/tls/tests/data/ascon-testcase-5.sol b/tls/tests/data/ascon-testcase-5.sol
+new file mode 100644
+index 0000000000000000000000000000000000000000..02d65b8889e9525bd8972195914165481e16ba6f
+GIT binary patch
+literal 360
+zcmWe<W@d1X7k0kD00oN5GnD0b1U|O9zUb}=r$-m`8Dl<`-8!*by(aq8w2v3#MM}QC
+zkC<>XzOqTMRZ;gf^OYmj&+fnG7DqFOk#XP0#}C?BIIOddOucb^?-PlK{|i>ezIhf@
+zD7UcXaP!6+#l9ELI{5`eNgl9JwP7pJ-@nN|&Z7a{9Hugn6=|2wR;MPv59Vq$_EFe9
+zIZ!ZGWPRYL$vdQib0hRN?2dTYeb=x%(Kuh7t?=9TR~f7Zo0PYqo5L(%lYe;DnrUBG
+zy`J~E$ws~O<iG7IVFoO>nz9mO_ZJ*t{}S`SQo(Z0(as82lfRF;>o%_zmAzv53f&x*
+z*$Z;-{jrm<$hf0<S3%(-FaHKPU0#=in<w313W;}{=_>f3o@e*x?$R3e`6@>KKI_A8
+KC-Fy~vH$>)R*&!i
+
+literal 0
+HcmV?d00001
+
+diff --git a/tls/tests/data/ascon-testcase-6.chal b/tls/tests/data/ascon-testcase-6.chal
+new file mode 100644
+index 0000000000000000000000000000000000000000..067095466a876af5840602b3e40af3435a9d9580
+GIT binary patch
+literal 310
+zcmXw!FG~bL7{)h=oY`V}n`Og>Ybs*9AfiFA&fY$I^TPZ&XJ+qQ5VZIOL`)iNg2@x3
+z7E!SI1q=r9BbXFt?y$Y^yuatq<w!p5tz}<Jr*^wP_jdAgc1OpLt2^J%?MIQBiX_Ac
+zhD1CeT#)1eO~Fz%hEl|abW7egD!p9Yzt11tJggVl(80s>LAItKK^sc*K!!G_v9wfM
+zr%_Sk6EE45-TIt#!@}Zbk%`h<S4K5TiNwKv!=3|Tvhh<x4Tnx}!bC;gzAX374=2MS
+z`_E!MghA9xg&3t+3}#qM!2v#>t|=StbuV^buYV&sYa$FGz!?s0@+uX3zmlFiv53jj
+J(%Lah^#>$2bsPWy
+
+literal 0
+HcmV?d00001
+
+diff --git a/tls/tests/data/ascon-testcase-6.sol b/tls/tests/data/ascon-testcase-6.sol
+new file mode 100644
+index 0000000000000000000000000000000000000000..b55a6a7b22ed92f6c97ccf56cfe740c3421d97e0
+GIT binary patch
+literal 405
+zcmWe<W@hmDJ7u#10~FYNR8QTb_Fdq1lb(;=9ht0;0xL~LFDPu{cF5m<a+koak5R3B
+z^1D~xdbdXJ_ywuBr^Y6Kgj~10dnw%)ApfB)pj#ZxKt_wr2eoZ}EqN$3!{4NAn{uWI
+z`@3@I)%*FUFmuG37%FX9+#r3Jb;7SVey8V8xawY`^{iRXn)8-az?*<cOU%VXc+m}H
+z(%sa5s#;~jxh?n1*6e@P@H;_nDSKf`;13V`6q}iPPj)cwH&c(d(~^1TJXh)8hlDT5
+zeZ_|6ds%fW?#wzo`;;gPx`E7su`9LIer=Nzn%O7(Qq<e~cKPY>z43Nk+oE>vn>$nS
+z{Okz(XB|m~t4}rjR$uT$a;I*<d<G51r0K=8-nnMIV3I;NkmUt$gZsgEXAkqJoca7C
+zQuA+E><^)-TQ|*pY+)>Rz&i4ba@K|QS<m$HZEBthuw6T`_s=)s>LjC$vPWl6J*COI
+Gmkj_L3#JVK
+
+literal 0
+HcmV?d00001
+
+diff --git a/tls/tests/data/ascon-testcase-7.chal b/tls/tests/data/ascon-testcase-7.chal
+new file mode 100644
+index 0000000000000000000000000000000000000000..45aa326478323b0f24d8367ed9dd227135b3fb02
+GIT binary patch
+literal 365
+zcmX|-KT88a5XBGdE?5cHQ)n0c0%xTl1PlKZqU9u+%dXkmJ!bbJ7O6zR!a@v)RX%_z
+zE$p;V>=bOY*UBPTiIq5)1dC<adA#?2vkS*>!}r&f`1kqZWOu3CKf8Qco9^$-RIY#S
+zlL%Z22z4^9LruuE4@}-yAt<tOP1HbE9@@5HUk3%o*_O7gDy*x!tHEsL@vxgjcF!G*
+z<xFnn48@9&!y?oGGe9v>70@;zB{F3;G!$|s@lTtdb6+3xH%ZhX_GqM_Lz1BzN~n<i
+z$mR<lP+Jd$prHpH;?y_{qOvRO(d~DycHUb~BGz@R8-mnv=F8p6E-_Lg_;>_hG)>kM
+xxPP3SX?1&Q_;9+lkwm#GcpNN0G664hGGg7-Xu%h90_!&UvLG(<oLHuu{sE7Aih2M5
+
+literal 0
+HcmV?d00001
+
+diff --git a/tls/tests/data/ascon-testcase-7.sol b/tls/tests/data/ascon-testcase-7.sol
+new file mode 100644
+index 0000000000000000000000000000000000000000..56385e4fedd8d791ed994431561cd8cdab41553d
+GIT binary patch
+literal 460
+zcmWe<W@ZSVIP;P>0~D-WsE~Shiu(0SmWFvZc16yZJD(+ABr@o0%~hSQgZqC(f0=M8
+zI;rQTNcuFrrE=^~1#elsNU?K`D%kI++9tcic&|ix16x<UEvHaLx;UEIjQ8v9ZZW+7
+zvhNV9^UTAdDsDM*_Pyi0wEstO!!AQd4z7wWR=f1a3|~{i9aogzn{rU=t<8m%A^j(k
+z+4qIzefa2pW68@DSGF?##*`^L(amO>vFOh9H+jn^%}zfyVg3#;))&5fOgama-1!&O
+zwnR>!&Rdl9d(Na%!Ieu~XWB|+#kw7sSN*?RVMVg=d(GF33A2jpPU%-}Fa3V3rD`U+
+z*~}}&-|Z1IzHz2;-p!6e=NlW8#N<SGugpGm?ju9Q_h@Usd($fpOtb5oZN6s0g_-3J
+z7pJT@VYzR7Tq5%?C*x+fH@WwXFCNu;qgA=5mL1(}mhF!-e@s;C>!`4s@Iphx;KR3;
+zTP@$2lBbsEghcx+in_Ue$*xMV`@4K*?5p$cz3ceVS+;!95xbV8n^or@eKT{PRpYF3
+NCx6Z3xSbDo0s#9s$z}im
+
+literal 0
+HcmV?d00001
+
+diff --git a/tls/tests/data/ascon-testcase-8.chal b/tls/tests/data/ascon-testcase-8.chal
+new file mode 100644
+index 0000000000000000000000000000000000000000..b1e6e66de50004c2d53a4917227787bdab211070
+GIT binary patch
+literal 405
+zcmXYtu}T9$5Qb9+1i=Sz0+vTAUqG(WC$QAHySdzwz1?+Z&v;-V+FDs@X%#`y!YWn3
+z(oR9qClFKE7!eV~xoEZQ&cEOP|8sJ`_c~eJn7)kn)5-U4{SYl2ET2BkDRcH2w>*S`
+zAkm5$Yz}NI&7f7Epj3vsum)JlD-`Hl9YI+`M(82;icA*Cq>ZD)?%mP*Fppc?ij_6o
+zffX27labFW4NRVl3bh~@0`|#(v&_Vew(%_MHkqJ2HSWh3*U#sdqfXqCkA`U`5CQ~`
+zW~)*fXh(4%lTswnF-Sr~Jxyt7KmoO|xXI0hUAlVun7`RvmztPpg4}9_y+39xL?Vs=
+zO$JF703oLVu=vz%;bF;gA=IEuuwpe{z5SUE-@f9O>?jk1barOMsaJ^vEJ)&}R+72U
+UtRebWsM2|93zd_;4jp;GUwM|El>h($
+
+literal 0
+HcmV?d00001
+
+diff --git a/tls/tests/data/ascon-testcase-8.sol b/tls/tests/data/ascon-testcase-8.sol
+new file mode 100644
+index 0000000000000000000000000000000000000000..a821ac5c282a2b6c87751aa3524b4beb590fb6e1
+GIT binary patch
+literal 500
+zcmWe<W@d=Lsw3RY00nj5w=vs4togigrOE8H<sZruE#}9t?T@hz{ruGVsS)SlvfHWF
+zYRfMcl=QA^NL?!9el}{#eA(apAH%$N7thn05m=CRMuuJQ=~3weVK4o}I(aANri!E4
+z!I;C6vf#Uw6vvT|w{&XFIg;j1w(@=<y^Z^4y`o6Nf@AiJm(4%wCaTaTmHp!NZ!gg$
+z1&P(n&)(EL^xR(=S;1|2wxw>qg3^V<b1!mhu}s^kc<AWoXmmT6GI$$PZmgdEA@7xT
+zI!A)<`BKF!F8f)b#Y^@ZK5b=Py+ET|fPs-=^7A7H)*hDN-&dmE>&e2isNvbY?M3Ih
+zKWbDQWn6WdT_Iv#|6A!5Q~vxi+`7me-45nTu6d7kml#a5J{mhCoVW6}@1ki94qV?>
+zI56osgr~VFF?McWTD;+b;I8ZMa%Oz4be8%)ch8oH<EK0Pvv}CLO?O7~gqKZdGTqR>
+zPCw(A<e77E%XXmK!Sdk~`&p(JN|`^Wn7+GQIzRfGx9p6J^mnZ(XDm(5<ka!=9Q$fH
+zMQ+{;1N*&u=6Bq>rXoD+fN0ee-kWb0{^@$hAvN{L!xirPrP9wXoxOQl@svq5wFd#?
+Co7Fx5
+
+literal 0
+HcmV?d00001
+
+diff --git a/tls/tests/data/ascon-testcase-9.chal b/tls/tests/data/ascon-testcase-9.chal
+new file mode 100644
+index 0000000000000000000000000000000000000000..6f6437897b7fc92358bc334c083ed6422c76011d
+GIT binary patch
+literal 445
+zcmXX?Jxc>Y5WNH}3|3<AD5Q~)Ld#ef1vOlyh!$2GZ!R}vZ}-^Q%W;<e5<7o^jg8<x
+z(B49{h@Fjv_<^$_#j?zsdGp?z%XV{XV|09fu=29}y8HKd{XCfZ?VH7qPxy`_Vg{Q6
+z+fp-V8YARnunPlFxuB4#qNqEN*N~uckUBz>bfnW#L$+>+36KGwA>ii8-BGh~xDZF7
+z%+XOo$^e)0ypz>Dn=6X~ouDpN7Z|j|H01>v^iB;mLTWXs(X5yMPTOBQtLJ-h#AL=$
+znncKfQ6Y^oKj*i&(BjLMZVoWQgqW=1HRwZS11&8zFgi5Ud|JQizc1a2Q-><=feM)v
+zOKMFB7upKn+o02u)IO7@6t-j;6c1x#D+7gA#xp2~V63Oc=|k@=+5d?nTXo?qL(_pO
+nBgqriXgfh&!$fI~HF(6Fp(39NQUu$|S;;0>6Dj#a!f?TVkCdZD
+
+literal 0
+HcmV?d00001
+
+diff --git a/tls/tests/data/ascon-testcase-9.sol b/tls/tests/data/ascon-testcase-9.sol
+new file mode 100644
+index 0000000000000000000000000000000000000000..ac24f85dbeb22022198bf879b4ba2b19dae1048c
+GIT binary patch
+literal 540
+zcmWe<W@boVaM$w%0~B04argesiES&N?5Mo@E8)e))zx=*)V-PP$-XlFmXD3bz9jxb
+z^#@NKm%X}--C^IGZ_}qNvv3WIS@C?~=S`<1TAMt!AMASk-OZFe{79?oT+z+jf7zd}
+z6VhJ0b@$9C;%Ig;cHCXra&V>9#3C-CZIx`lB#OU$`FsApsgEdoanR;>w{LDN-Jx~-
+zMn>SR7waW6=cm@y-8`DNx$BcPa~zlQ+bMjj)|sW&TOD<JGo|h9wx+kKtCZfY&NhFx
+zSA}uG4RpJhCULz<_7&^;Aa4-8biQ8A5#uWtO1%7-UoTwVd68>@>g{N=&HKu#_RFj~
+z9#v$UciVmo@0Mcos=!u$|LLwQGm<vEShh3MLT<r)yZr~#g7&r7>(A6Xt*fDya$Nld
+zx?Rjni@xYb6x;oI5_O|#*G=0+KO7zvpZPTN^ortL^Wyg?@|<dXRn7W&`8?sasRv@;
+zoeBE1EA5_@%bXW38M0NOQp+0_GY9Pal#*U3Kesr0;h9&lo47t@-CF&8p}SiJx?L<%
+z-<Yn4&G`RcJbwCHbp`(S+pRT(eG*h{49}PI$fYs;i0C-;^`%!<f6VbCe{B{%h%c|N
+w=Z?HkfBTu~?}yIM_vYMSh%bB`ZhzuHhF`Hs;g{DjM=q_pz5UjSosS;^01TA^BLDyZ
+
+literal 0
+HcmV?d00001
+
+diff --git a/tls/tests/helpers.h b/tls/tests/helpers.h
+new file mode 100644
+index 0000000..3137ee3
+--- /dev/null
++++ b/tls/tests/helpers.h
+@@ -0,0 +1,97 @@
++/******************************************************************************
++**
++** Copyright (C) 2016 Graz University of Technology
++**
++** Contact: itsec-team@iaik.tugraz.at
++**
++** IT-SECURITY LICENSE
++** Version 1.1, 12th of March 2016
++**
++** This framework may only be used within the IT-Security exercises 2016. Only
++** students that are formally registered within TUGRAZ-online may use it until
++** 30th of June 2016. After that date, licensees have the duty to safely
++** delete the software framework.
++**
++** This license does not grant you any rights to re-distribute the software,
++** to change the license, to grant access to other individuals, and to
++** commercially use the software.
++**
++** This software is distributed WITHOUT ANY WARRANTY; without even the implied
++** warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++**
++** If you are interested in a more reasonable license, please use the contact
++** information above.
++**
++******************************************************************************/
++
++#ifndef HELPERS_H
++#define HELPERS_H
++
++#include <iomanip>
++#include <sstream>
++#include <string>
++#include <fstream>
++#include <array>
++#include <vector>
++
++namespace
++{
++  template <class T>
++  std::string digest_to_string(const T& digest)
++  {
++    std::ostringstream oss;
++    for (const auto v : digest)
++      oss << std::setfill('0') << std::setw(2) << std::hex << (uint32_t)v;
++
++    return oss.str();
++  }
++
++  template <class H>
++  std::string compute_hash(const uint8_t* data, const std::size_t data_size,
++                           const std::size_t loops)
++  {
++    H hash;
++    for (std::size_t l = 0; l < loops; ++l)
++      hash.update(data, data_size);
++    const auto digest = hash.digest();
++
++    return digest_to_string(digest);
++  }
++
++  template <class H>
++  std::string compute_hmac(const uint8_t* key, std::size_t key_size, const uint8_t* data,
++                           const std::size_t data_size)
++  {
++    H hmac(key, key_size);
++    hmac.update(data, data_size);
++    const auto digest = hmac.digest();
++
++    return digest_to_string(digest);
++  }
++
++  template <class H>
++  std::string compute_hmac_i(const uint8_t* key, std::size_t key_size, const uint8_t* data,
++                             const std::size_t data_size)
++  {
++    H hmac(key, key_size);
++    for (std::size_t idx = 0; idx != data_size; ++idx, ++data)
++      hmac.update(data, 1);
++    const auto digest = hmac.digest();
++
++    return digest_to_string(digest);
++  }
++
++  template <class T, std::size_t S>
++  void read(std::istream& is, std::array<T, S>& array)
++  {
++    is.read(reinterpret_cast<char*>(array.data()), array.size());
++  }
++
++  template <class T>
++  void read(std::istream& is, std::vector<T>& array)
++  {
++    is.read(reinterpret_cast<char*>(array.data()), array.size());
++  }
++}
++
++#endif
+diff --git a/tls/tests/hmac_sha2.cpp b/tls/tests/hmac_sha2.cpp
+new file mode 100644
+index 0000000..751e69a
+--- /dev/null
++++ b/tls/tests/hmac_sha2.cpp
+@@ -0,0 +1,310 @@
++/******************************************************************************
++**
++** Copyright (C) 2016 Graz University of Technology
++**
++** Contact: itsec-team@iaik.tugraz.at
++**
++** IT-SECURITY LICENSE
++** Version 1.1, 12th of March 2016
++**
++** This framework may only be used within the IT-Security exercises 2016. Only
++** students that are formally registered within TUGRAZ-online may use it until
++** 30th of June 2016. After that date, licensees have the duty to safely
++** delete the software framework.
++**
++** This license does not grant you any rights to re-distribute the software,
++** to change the license, to grant access to other individuals, and to
++** commercially use the software.
++**
++** This software is distributed WITHOUT ANY WARRANTY; without even the implied
++** warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++**
++** If you are interested in a more reasonable license, please use the contact
++** information above.
++**
++******************************************************************************/
++
++#include "../hmac-sha2.h"
++#include "helpers.h"
++
++#include <check.h>
++
++namespace
++{
++  // FIPS 198a A.1
++  const uint8_t key_fips_1[] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a,
++                                0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15,
++                                0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0x20,
++                                0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b,
++                                0x2c, 0x2d, 0x2e, 0x2f, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36,
++                                0x37, 0x38, 0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f};
++
++  const uint8_t text_fips_1[] = {'S', 'a', 'm', 'p', 'l', 'e', ' ', '#', '1'};
++
++  const std::string expected_fips_1 =
++      "3519f0cddfa090f8ace819d9ae8501578c46920502c62baa47bfe6014864a93a";
++
++  // FIPS 198a A.2
++  const uint8_t key_fips_2[] = {0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39,
++                                0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f, 0x40, 0x41, 0x42, 0x43};
++
++  const uint8_t text_fips_2[] = {'S', 'a', 'm', 'p', 'l', 'e', ' ', '#', '2'};
++
++  const std::string expected_fips_2 =
++      "b8f20db541ea4309ca4ea9380cd0e834f71fbe9174a261380dc17eae6a3451d9";
++
++  // FIPS 198a A.3
++  const uint8_t key_fips_3[] = {
++      0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5a, 0x5b, 0x5c, 0x5d, 0x5e,
++      0x5f, 0x60, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6a, 0x6b, 0x6c, 0x6d,
++      0x6e, 0x6f, 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7a, 0x7b, 0x7c,
++      0x7d, 0x7e, 0x7f, 0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89, 0x8a, 0x8b,
++      0x8c, 0x8d, 0x8e, 0x8f, 0x90, 0x91, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98, 0x99, 0x9a,
++      0x9b, 0x9c, 0x9d, 0x9e, 0x9f, 0xa0, 0xa1, 0xa2, 0xa3, 0xa4, 0xa5, 0xa6, 0xa7, 0xa8, 0xa9,
++      0xaa, 0xab, 0xac, 0xad, 0xae, 0xaf, 0xb0, 0xb1, 0xb2, 0xb3};
++
++  const uint8_t text_fips_3[] = {'S', 'a', 'm', 'p', 'l', 'e', ' ', '#', '3'};
++
++  const std::string expected_fips_3 =
++      "2d7d0d7f3e52ffe89d65c978f39d555bb48b0ba48d5b6eb404654ad1afdb4ca3";
++
++  // RFC 2202 1
++  const uint8_t key_1[] = {0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b,
++                           0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b};
++
++  const uint8_t text_1[] = {'H', 'i', ' ', 'T', 'h', 'e', 'r', 'e'};
++
++  const std::string expected_1 = "b0344c61d8db38535ca8afceaf0bf12b881dc200c9833da726e9376c2e32cff7";
++
++  // RFC 2202 2
++  const uint8_t key_2[] = {'J', 'e', 'f', 'e'};
++
++  const uint8_t text_2[] = {'w', 'h', 'a', 't', ' ', 'd', 'o', ' ', 'y', 'a', ' ', 'w', 'a', 'n',
++                            't', ' ', 'f', 'o', 'r', ' ', 'n', 'o', 't', 'h', 'i', 'n', 'g', '?'};
++
++  const std::string expected_2 = "5bdcc146bf60754e6a042426089575c75a003f089d2739839dec58b964ec3843";
++
++  // RFC 2202 3
++  const uint8_t key_3[] = {0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
++                           0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa};
++
++  const uint8_t text_3[] = {0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd,
++                            0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd,
++                            0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd,
++                            0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd,
++                            0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd};
++
++  const std::string expected_3 = "773ea91e36800e46854db8ebd09181a72959098b3ef8c122d9635514ced565fe";
++
++  // RFC 2202 4
++  const uint8_t key_4[] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
++                           0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12,
++                           0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19};
++
++  const uint8_t text_4[] = {0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
++                            0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
++                            0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
++                            0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd,
++                            0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd};
++
++  const std::string expected_4 = "82558a389a443c0ea4cc819899f2083a85f0faa3e578f8077a2e3ff46729665b";
++
++  // RFC 2202 5
++  const uint8_t key_5[] = {0x0c, 0x0c, 0x0c, 0x0c, 0x0c, 0x0c, 0x0c, 0x0c, 0x0c, 0x0c,
++                           0x0c, 0x0c, 0x0c, 0x0c, 0x0c, 0x0c, 0x0c, 0x0c, 0x0c, 0x0c};
++
++  const uint8_t text_5[] = {'T', 'e', 's', 't', ' ', 'W', 'i', 't', 'h', ' ',
++                            'T', 'r', 'u', 'n', 'c', 'a', 't', 'i', 'o', 'n'};
++
++  const std::string expected_5 = "a3b6167473100ee06e0c796c2955552bfa6f7c0a6a8aef8b93f860aab0cd20c5";
++
++  // RFC 2202 6
++  const uint8_t key_6[] = {0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
++                           0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
++                           0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
++                           0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
++                           0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
++                           0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
++                           0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa};
++
++  const uint8_t text_6[] = {'T', 'e', 's', 't', ' ', 'U', 's', 'i', 'n', 'g', ' ', 'L', 'a', 'r',
++                            'g', 'e', 'r', ' ', 'T', 'h', 'a', 'n', ' ', 'B', 'l', 'o', 'c', 'k',
++                            '-', 'S', 'i', 'z', 'e', ' ', 'K', 'e', 'y', ' ', '-', ' ', 'H', 'a',
++                            's', 'h', ' ', 'K', 'e', 'y', ' ', 'F', 'i', 'r', 's', 't'};
++
++  const std::string expected_6 = "6953025ed96f0c09f80a96f78e6538dbe2e7b820e3dd970e7ddd39091b32352f";
++
++  // RFC 2202 7
++  const uint8_t key_7[] = {0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
++                           0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
++                           0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
++                           0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
++                           0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
++                           0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
++                           0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa};
++
++  const uint8_t text_7[] = {
++      'T', 'e', 's', 't', ' ', 'U', 's', 'i', 'n', 'g', ' ', 'L', 'a', 'r', 'g', 'e', 'r', ' ', 'T',
++      'h', 'a', 'n', ' ', 'B', 'l', 'o', 'c', 'k', '-', 'S', 'i', 'z', 'e', ' ', 'K', 'e', 'y', ' ',
++      'a', 'n', 'd', ' ', 'L', 'a', 'r', 'g', 'e', 'r', ' ', 'T', 'h', 'a', 'n', ' ', 'O', 'n', 'e',
++      ' ', 'B', 'l', 'o', 'c', 'k', '-', 'S', 'i', 'z', 'e', ' ', 'D', 'a', 't', 'a'};
++
++  const std::string expected_7 = "6355ac22e890d0a3c8481a5ca4825bc884d3e7a1ff98a2fc2ac7d8e064c3b2e6";
++}
++
++START_TEST(fips_1)
++{
++  const auto h =
++      compute_hmac<hmac_sha2>(key_fips_1, sizeof(key_fips_1), text_fips_1, sizeof(text_fips_1));
++  ck_assert_str_eq(h.c_str(), expected_fips_1.c_str());
++}
++END_TEST
++
++START_TEST(fips_2)
++{
++  const auto h =
++      compute_hmac<hmac_sha2>(key_fips_2, sizeof(key_fips_2), text_fips_2, sizeof(text_fips_3));
++  ck_assert_str_eq(h.c_str(), expected_fips_2.c_str());
++}
++END_TEST
++
++START_TEST(fips_3)
++{
++  const auto h =
++      compute_hmac<hmac_sha2>(key_fips_3, sizeof(key_fips_3), text_fips_3, sizeof(text_fips_3));
++  ck_assert_str_eq(h.c_str(), expected_fips_3.c_str());
++}
++END_TEST
++
++START_TEST(rfc2202_1)
++{
++  const auto h = compute_hmac<hmac_sha2>(key_1, sizeof(key_1), text_1, sizeof(text_1));
++  ck_assert_str_eq(h.c_str(), expected_1.c_str());
++}
++END_TEST
++
++START_TEST(rfc2202_2)
++{
++  const auto h = compute_hmac<hmac_sha2>(key_2, sizeof(key_2), text_2, sizeof(text_2));
++  ck_assert_str_eq(h.c_str(), expected_2.c_str());
++}
++END_TEST
++
++START_TEST(rfc2202_3)
++{
++  const auto h = compute_hmac<hmac_sha2>(key_3, sizeof(key_3), text_3, sizeof(text_3));
++  ck_assert_str_eq(h.c_str(), expected_3.c_str());
++}
++END_TEST
++
++START_TEST(rfc2202_4)
++{
++  const auto h = compute_hmac<hmac_sha2>(key_4, sizeof(key_4), text_4, sizeof(text_4));
++  ck_assert_str_eq(h.c_str(), expected_4.c_str());
++}
++END_TEST
++
++START_TEST(rfc2202_5)
++{
++  const auto h = compute_hmac<hmac_sha2>(key_5, sizeof(key_5), text_5, sizeof(text_5));
++  ck_assert_str_eq(h.c_str(), expected_5.c_str());
++}
++END_TEST
++
++START_TEST(rfc2202_6)
++{
++  const auto h = compute_hmac<hmac_sha2>(key_6, sizeof(key_6), text_6, sizeof(text_6));
++  ck_assert_str_eq(h.c_str(), expected_6.c_str());
++}
++END_TEST
++
++START_TEST(rfc2202_7)
++{
++  const auto h = compute_hmac<hmac_sha2>(key_7, sizeof(key_7), text_7, sizeof(text_7));
++  ck_assert_str_eq(h.c_str(), expected_7.c_str());
++}
++END_TEST
++
++START_TEST(rfc2202_1_i)
++{
++  const auto h = compute_hmac_i<hmac_sha2>(key_1, sizeof(key_1), text_1, sizeof(text_1));
++  ck_assert_str_eq(h.c_str(), expected_1.c_str());
++}
++END_TEST
++
++START_TEST(rfc2202_2_i)
++{
++  const auto h = compute_hmac_i<hmac_sha2>(key_2, sizeof(key_2), text_2, sizeof(text_2));
++  ck_assert_str_eq(h.c_str(), expected_2.c_str());
++}
++END_TEST
++
++START_TEST(rfc2202_3_i)
++{
++  const auto h = compute_hmac_i<hmac_sha2>(key_3, sizeof(key_3), text_3, sizeof(text_3));
++  ck_assert_str_eq(h.c_str(), expected_3.c_str());
++}
++END_TEST
++
++START_TEST(rfc2202_4_i)
++{
++  const auto h = compute_hmac_i<hmac_sha2>(key_4, sizeof(key_4), text_4, sizeof(text_4));
++  ck_assert_str_eq(h.c_str(), expected_4.c_str());
++}
++END_TEST
++
++START_TEST(rfc2202_5_i)
++{
++  const auto h = compute_hmac_i<hmac_sha2>(key_5, sizeof(key_5), text_5, sizeof(text_5));
++  ck_assert_str_eq(h.c_str(), expected_5.c_str());
++}
++END_TEST
++
++START_TEST(rfc2202_6_i)
++{
++  const auto h = compute_hmac_i<hmac_sha2>(key_6, sizeof(key_6), text_6, sizeof(text_6));
++  ck_assert_str_eq(h.c_str(), expected_6.c_str());
++}
++END_TEST
++
++START_TEST(rfc2202_7_i)
++{
++  const auto h = compute_hmac_i<hmac_sha2>(key_7, sizeof(key_7), text_7, sizeof(text_7));
++  ck_assert_str_eq(h.c_str(), expected_7.c_str());
++}
++END_TEST
++
++int main()
++{
++  Suite* suite = suite_create("HMAC_SHA2");
++
++  TCase* tcase = tcase_create("FIPS");
++  tcase_add_test(tcase, fips_1);
++  tcase_add_test(tcase, fips_2);
++  tcase_add_test(tcase, fips_3);
++  suite_add_tcase(suite, tcase);
++
++  tcase = tcase_create("RFC 2202");
++  tcase_add_test(tcase, rfc2202_1);
++  tcase_add_test(tcase, rfc2202_2);
++  tcase_add_test(tcase, rfc2202_3);
++  tcase_add_test(tcase, rfc2202_4);
++  tcase_add_test(tcase, rfc2202_5);
++  tcase_add_test(tcase, rfc2202_6);
++  tcase_add_test(tcase, rfc2202_7);
++  tcase_add_test(tcase, rfc2202_1_i);
++  tcase_add_test(tcase, rfc2202_2_i);
++  tcase_add_test(tcase, rfc2202_3_i);
++  tcase_add_test(tcase, rfc2202_4_i);
++  tcase_add_test(tcase, rfc2202_5_i);
++  tcase_add_test(tcase, rfc2202_6_i);
++  tcase_add_test(tcase, rfc2202_7_i);
++  suite_add_tcase(suite, tcase);
++
++  SRunner* suite_runner = srunner_create(suite);
++  srunner_run_all(suite_runner, CK_VERBOSE);
++  int number_failed = srunner_ntests_failed(suite_runner);
++  srunner_free(suite_runner);
++
++  return !number_failed ? EXIT_SUCCESS : EXIT_FAILURE;
++}
+diff --git a/tls/tests/nonce.cpp b/tls/tests/nonce.cpp
+new file mode 100644
+index 0000000..8c75201
+--- /dev/null
++++ b/tls/tests/nonce.cpp
+@@ -0,0 +1,106 @@
++/******************************************************************************
++**
++** Copyright (C) 2016 Graz University of Technology
++**
++** Contact: itsec-team@iaik.tugraz.at
++**
++** IT-SECURITY LICENSE
++** Version 1.1, 12th of March 2016
++**
++** This framework may only be used within the IT-Security exercises 2016. Only
++** students that are formally registered within TUGRAZ-online may use it until
++** 30th of June 2016. After that date, licensees have the duty to safely
++** delete the software framework.
++**
++** This license does not grant you any rights to re-distribute the software,
++** to change the license, to grant access to other individuals, and to
++** commercially use the software.
++**
++** This software is distributed WITHOUT ANY WARRANTY; without even the implied
++** warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++**
++** If you are interested in a more reasonable license, please use the contact
++** information above.
++**
++******************************************************************************/
++
++#include "../counter.h"
++#include "../endian.h"
++#include <cstring>
++
++#include <check.h>
++
++namespace
++{
++  constexpr uint8_t fixed_common[]     = {0x01, 0x02, 0x03, 0x04};
++  constexpr uint8_t fixed_distinct[]   = {0x05, 0x06, 0x07, 0x08};
++  constexpr uint8_t fixed_distinct_2[] = {0x06, 0x07, 0x08, 0x09};
++}
++
++START_TEST(simple)
++{
++  incrementing_nonce nonce(fixed_common, fixed_distinct);
++  const auto n     = nonce.nonce();
++  const uint64_t c = 0;
++
++  ck_assert_uint_eq(std::memcmp(n.data(), fixed_common, sizeof(fixed_common)), 0);
++  ck_assert_uint_eq(
++      std::memcmp(n.data() + sizeof(fixed_common), fixed_distinct, sizeof(fixed_distinct)), 0);
++  ck_assert_uint_eq(
++      std::memcmp(n.data() + sizeof(fixed_common) + sizeof(fixed_distinct), &c, sizeof(c)), 0);
++}
++END_TEST
++
++START_TEST(loop)
++{
++  incrementing_nonce nonce(fixed_common, fixed_distinct);
++  ++nonce;
++
++  for (uint64_t i = 1; i != 0xfffff; ++i, ++nonce)
++  {
++    const auto n     = nonce.nonce();
++    const uint64_t c = hton(i);
++
++    ck_assert_uint_eq(std::memcmp(n.data(), fixed_common, sizeof(fixed_common)), 0);
++    ck_assert_uint_eq(
++        std::memcmp(n.data() + sizeof(fixed_common), fixed_distinct, sizeof(fixed_distinct)), 0);
++    ck_assert_uint_eq(
++        std::memcmp(n.data() + sizeof(fixed_common) + sizeof(fixed_distinct), &c, sizeof(c)), 0);
++  }
++}
++END_TEST
++
++START_TEST(reset)
++{
++  incrementing_nonce nonce(fixed_common, fixed_distinct);
++  ++nonce;
++  nonce.reset(fixed_distinct_2);
++  const auto n     = nonce.nonce();
++  const uint64_t c = 0;
++
++  ck_assert_uint_eq(std::memcmp(n.data(), fixed_common, sizeof(fixed_common)), 0);
++  ck_assert_uint_eq(
++      std::memcmp(n.data() + sizeof(fixed_common), fixed_distinct_2, sizeof(fixed_distinct_2)), 0);
++  ck_assert_uint_eq(
++      std::memcmp(n.data() + sizeof(fixed_common) + sizeof(fixed_distinct_2), &c, sizeof(c)), 0);
++}
++END_TEST
++
++int main()
++{
++  Suite* suite = suite_create("Nonce");
++
++  TCase* tcase = tcase_create("Nonce");
++  tcase_set_timeout(tcase, 0);
++  tcase_add_test(tcase, simple);
++  tcase_add_test(tcase, loop);
++  tcase_add_test(tcase, reset);
++  suite_add_tcase(suite, tcase);
++
++  SRunner* suite_runner = srunner_create(suite);
++  srunner_run_all(suite_runner, CK_VERBOSE);
++  int number_failed = srunner_ntests_failed(suite_runner);
++  srunner_free(suite_runner);
++
++  return !number_failed ? EXIT_SUCCESS : EXIT_FAILURE;
++}
+diff --git a/tls/tests/prf.cpp b/tls/tests/prf.cpp
+new file mode 100644
+index 0000000..bfe4240
+--- /dev/null
++++ b/tls/tests/prf.cpp
+@@ -0,0 +1,108 @@
++/******************************************************************************
++**
++** Copyright (C) 2016 Graz University of Technology
++**
++** Contact: itsec-team@iaik.tugraz.at
++**
++** IT-SECURITY LICENSE
++** Version 1.1, 12th of March 2016
++**
++** This framework may only be used within the IT-Security exercises 2016. Only
++** students that are formally registered within TUGRAZ-online may use it until
++** 30th of June 2016. After that date, licensees have the duty to safely
++** delete the software framework.
++**
++** This license does not grant you any rights to re-distribute the software,
++** to change the license, to grant access to other individuals, and to
++** commercially use the software.
++**
++** This software is distributed WITHOUT ANY WARRANTY; without even the implied
++** warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++**
++** If you are interested in a more reasonable license, please use the contact
++** information above.
++**
++******************************************************************************/
++
++#include "../prf.h"
++#include "helpers.h"
++
++#include <cstring>
++#include <string>
++#include <vector>
++
++#include <check.h>
++
++namespace
++{
++  constexpr uint8_t secret[] = {0xff, 0xfe, 0xfd, 0xfc, 0xfb, 0xfa, 0xf9};
++  constexpr uint8_t seed[]   = {0xef, 0xee, 0xed, 0xec, 0xeb, 0xea, 0xe9, 0xe8, 0xe7, 0xe6};
++  const std::string label    = "label for HMAC-PRF using HMAC-SHA2";
++  const std::string expected =
++      "ba04b70f8cdf554803c91ab1bfe401ae190ee2dfdfbf58546cfaef8143272721e34cea8c740e1df3224941aa3e07"
++      "987bcfa0df4a3a770a55d3732b8370ea2ef3ee1df795d0228334b1c965a10d2bd48b881e6dcabaa55a25e6192883"
++      "fc3fac69e83833553f1b26dc686ccb1e00f0ee2cb6afdf686b976e1b4f2a3e9bf548ef2dd93fde13fb0dd5f668bc"
++      "245c2e1bc78a2d7cd542204ce5bc73f109c9bb0ca70977a7cb5d26eeac240e5868714ac84eb0c402fea6534bf508"
++      "d17ea416f650d265af43c1d1a8b83fcf44c86fbaea8fd59120f5c8c523ee351a2de5026562afa0fde6b7344604b6"
++      "8d257312573eef636a42a49419fe186204c60828a3adc6d10a4a5cc9e19f75820cd74c2ec4adfa8dc702b979b7e1"
++      "c76e8c87aa3f0a65f4fd34e4475c8b471f759da615225b0287c736707ab1ad6221c69c747765a094c57e13175a25"
++      "729eb40461f245521082d3413a72ad592672c77575aaae4359bee3d33ecbf6b247d0addfd729151358db339fd768"
++      "18926ed7b1e2b3dca0117cc5a0074a16d8b4f282ddcbcd57079b27bd62500ae0f2aee2b21c1996c84ffa2b651c32"
++      "f8444f6860131250c2857ee07480b5b5e41fb017304ae49052c74df9ddfb5504b6d2951467618c20120e91089326"
++      "4b673fb2321c3d730e8a82bd80b615c60a00fe46c3f79c2cb4e54f9967a565a9eb3074f173dd62e3d7a6765544e4"
++      "bacc1d0437be7533cc6d275745ba2254a4e74595ad7a3b5f7c5ec4e8ee430802be5d9566dbddfcc997c6ee587741"
++      "76022b6eda5f4b91d9cd56b02b146682821b9c9bac77cfa6c790c2c17f05d37f0f0f47fd5d707fd33c3bd6b28549"
++      "9bb28b6ea1d0ad35838e009db4876772d7426ffddd0b73de39b02fe63169e8703d5232620549825dfbd55589f82f"
++      "1c87ed16e147cdba049db3750e3cbfe272bfc6fb52b1ff1c3b2114b93d34e09daae27dff2a40c0a1be3f6f24d191"
++      "c1f97dae78c849d5154f561b11237b9f81c84d7468b6776f5a82e776878b9fae399faee4ce214ea29e11015f84ad"
++      "0a73d4a84fe346d6a0899a8e29ab8f8750f97ad123d7b06860f9f7ee7e6b059a3dba6acc162d77629f96b10134e0"
++      "c862400ab589e82f3b8f8380e6902db07f486aa44cac5945557071954631fc0168cc40552caeac1cb6cf590798c1"
++      "935709d0424b4a6f795bccc629a078726c7cdb7d2b6e7010f9c2ec2f37b47713628e67a2d7bf5fbd3f47b8763608"
++      "a4fe03922a65d4ae3213101cbd5c67b01714cb901464e1ba5dea1075ebd4cd95d972644fce54d8f612da26aa11b1"
++      "5d8239d77797fc6e91430c2e52a5dbb3318bf4983a34db5cfb10173fcf7f7aa3ae2dff33b0adf73b89f702177806"
++      "383655d9332b7dcd65d890eb97ae184a0f1f2d963df49b6768b75bbee15ac5eb412b32930b44980e31fe4ae289fc"
++      "a07acf7e68820725005c85b8";
++}
++
++START_TEST(simple)
++{
++  hmac_prf prf(secret, sizeof(secret), label, seed, sizeof(seed));
++
++  std::vector<uint8_t> output(expected.size() / 2);
++  prf.get_output(output.data(), output.size());
++
++  const auto outputs = digest_to_string(output);
++  ck_assert_str_eq(outputs.c_str(), expected.c_str());
++}
++END_TEST
++
++START_TEST(loop)
++{
++  hmac_prf prf(secret, sizeof(secret), label, seed, sizeof(seed));
++
++  std::vector<uint8_t> output(expected.size() / 2);
++  for (std::size_t s = 0; s != output.size(); ++s)
++    prf.get_output(&output[s], 1);
++
++  const auto outputs = digest_to_string(output);
++  ck_assert_str_eq(outputs.c_str(), expected.c_str());
++}
++END_TEST
++
++int main()
++{
++  Suite* suite = suite_create("HMAC PRF");
++
++  TCase* tcase = tcase_create("HMAC PRF");
++  tcase_set_timeout(tcase, 0);
++  tcase_add_test(tcase, simple);
++  tcase_add_test(tcase, loop);
++  suite_add_tcase(suite, tcase);
++
++  SRunner* suite_runner = srunner_create(suite);
++  srunner_run_all(suite_runner, CK_VERBOSE);
++  int number_failed = srunner_ntests_failed(suite_runner);
++  srunner_free(suite_runner);
++
++  return !number_failed ? EXIT_SUCCESS : EXIT_FAILURE;
++}
+diff --git a/tls/tests/random.cpp b/tls/tests/random.cpp
+new file mode 100644
+index 0000000..94aae66
+--- /dev/null
++++ b/tls/tests/random.cpp
+@@ -0,0 +1,76 @@
++/*****************************************************************************
++**
++** Copyright (C) 2016 Graz University of Technology
++**
++** Contact: itsec-team@iaik.tugraz.at
++**
++** IT-SECURITY LICENSE
++** Version 1.1, 12th of March 2016
++**
++** This framework may only be used within the IT-Security exercises 2016. Only
++** students that are formally registered within TUGRAZ-online may use it until
++** 30th of June 2016. After that date, licensees have the duty to safely
++** delete the software framework.
++**
++** This license does not grant you any rights to re-distribute the software,
++** to change the license, to grant access to other individuals, and to
++** commercially use the software.
++**
++** This software is distributed WITHOUT ANY WARRANTY; without even the implied
++** warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++**
++** If you are interested in a more reasonable license, please use the contact
++** information above.
++**
++******************************************************************************/
++
++#include "../random.h"
++#include "helpers.h"
++
++#include <array>
++
++#include <check.h>
++
++START_TEST(simple)
++{
++  std::array<uint8_t, 64> data{{ 0 }};
++  const auto rhs = digest_to_string(data);
++
++  get_random_data(data.data(), data.size());
++
++  const auto lhs = digest_to_string(data);
++  ck_assert_str_ne(lhs.c_str(), rhs.c_str());
++}
++END_TEST
++
++START_TEST(twice)
++{
++  std::array<uint8_t, 64> data{{ 0 }}, data2{{ 0 }};
++
++  get_random_data(data.data(), data.size());
++  get_random_data(data2.data(), data2.size());
++
++  const auto lhs = digest_to_string(data);
++  const auto rhs = digest_to_string(data2);
++  ck_assert_str_ne(lhs.c_str(), rhs.c_str());
++}
++END_TEST
++
++
++int main()
++{
++  Suite* suite = suite_create("Random");
++
++  TCase* tcase = tcase_create("Basic");
++  tcase_set_timeout(tcase, 0);
++  tcase_add_test(tcase, simple);
++  tcase_add_test(tcase, twice);
++  suite_add_tcase(suite, tcase);
++
++  SRunner* suite_runner = srunner_create(suite);
++  srunner_run_all(suite_runner, CK_VERBOSE);
++  int number_failed = srunner_ntests_failed(suite_runner);
++  srunner_free(suite_runner);
++
++  return !number_failed ? EXIT_SUCCESS : EXIT_FAILURE;
++}
+diff --git a/tls/tests/tls_ascon.cpp b/tls/tests/tls_ascon.cpp
+new file mode 100644
+index 0000000..feb46b0
+--- /dev/null
++++ b/tls/tests/tls_ascon.cpp
+@@ -0,0 +1,118 @@
++/******************************************************************************
++**
++** Copyright (C) 2016 Graz University of Technology
++**
++** Contact: itsec-team@iaik.tugraz.at
++**
++** IT-SECURITY LICENSE
++** Version 1.1, 12th of March 2016
++**
++** This framework may only be used within the IT-Security exercises 2016. Only
++** students that are formally registered within TUGRAZ-online may use it until
++** 30th of June 2016. After that date, licensees have the duty to safely
++** delete the software framework.
++**
++** This license does not grant you any rights to re-distribute the software,
++** to change the license, to grant access to other individuals, and to
++** commercially use the software.
++**
++** This software is distributed WITHOUT ANY WARRANTY; without even the implied
++** warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++**
++** If you are interested in a more reasonable license, please use the contact
++** information above.
++**
++******************************************************************************/
++
++#include "../endian.h"
++#include "../tls-ascon.h"
++#include "../prf.h"
++#include "helpers.h"
++
++#include <array>
++#include <fstream>
++#include <iostream>
++
++int main(int argc, char** argv)
++{
++  if (argc != 3)
++  {
++    std::cout << argv[0] << " challenge solution" << std::endl;
++    return -1;
++  }
++
++  std::ifstream ifs_input(argv[1]), ifs_expected(argv[2]);
++  if (!ifs_input || !ifs_expected)
++  {
++    std::cout << "Unable to open input files." << std::endl;
++    return -1;
++  }
++
++  std::array<uint8_t, 16> prf_key, prf_seed;
++  read(ifs_input, prf_key);
++
++  for (std::size_t s = 0; s != prf_seed.size(); ++s)
++    prf_seed[s] = 0xff - s;
++
++  hmac_prf prf(prf_key.data(), prf_key.size(), "ITS test cases", prf_seed.data(), prf_seed.size());
++
++  ascon128::key_storage ascon_key;
++  prf.get_output(ascon_key.data(), ascon_key.size());
++
++  std::array<uint8_t, incrementing_nonce::fixed_common_size> nonce_fixed_common;
++  std::array<uint8_t, incrementing_nonce::fixed_distinct_size> nonce_fixed_disctinct;
++
++  prf.get_output(nonce_fixed_common.data(), nonce_fixed_common.size());
++  read(ifs_input, nonce_fixed_disctinct);
++
++  incrementing_nonce nonce(nonce_fixed_common.data(), nonce_fixed_disctinct.data());
++  tls12_ascon tls(ascon_key, nonce);
++
++  for (std::size_t s = 0; s != 5; ++s)
++  {
++    uint64_t sequence_number;
++    ifs_input.read(reinterpret_cast<char*>(&sequence_number), sizeof(sequence_number));
++
++    uint16_t plaintext_size = 0;
++    ifs_input.read(reinterpret_cast<char*>(&plaintext_size), sizeof(plaintext_size));
++
++    std::vector<uint8_t> plaintext(plaintext_size, 0);
++    read(ifs_input, plaintext);
++
++    tls12_ascon::record expected_record;
++    ifs_expected.read(reinterpret_cast<char*>(&expected_record.header),
++                      sizeof(expected_record.header));
++    read(ifs_expected, expected_record.explicit_nonce);
++
++    expected_record.ciphertext.resize(ntoh(expected_record.header.length) -
++                                      expected_record.explicit_nonce.size());
++    read(ifs_expected, expected_record.ciphertext);
++
++    if (!ifs_input || !ifs_expected)
++    {
++      std::cout << "Failed to read data." << std::endl;
++      return -1;
++    }
++
++    const auto actual_record = tls.encrypt(sequence_number, plaintext);
++
++    if (actual_record != expected_record)
++    {
++      std::cout << "Records do not match." << std::endl;
++      return -1;
++    }
++
++    std::vector<uint8_t> decrypted_plaintext;
++    if (!tls.decrypt(sequence_number, actual_record, decrypted_plaintext))
++    {
++      std::cout << "Decryption failed." << std::endl;
++      return -1;
++    }
++
++    if (plaintext.size() != decrypted_plaintext.size() || !std::equal(plaintext.begin(), plaintext.end(), decrypted_plaintext.begin()))
++    {
++      std::cout << "Plaintexts do not match." << std::endl;
++      return -1;
++    }
++  }
++}
+diff --git a/tls/tls-ascon.cpp b/tls/tls-ascon.cpp
+new file mode 100644
+index 0000000..c959c14
+--- /dev/null
++++ b/tls/tls-ascon.cpp
+@@ -0,0 +1,70 @@
++/******************************************************************************
++**
++** Copyright (C) 2016 Graz University of Technology
++**
++** Contact: itsec-team@iaik.tugraz.at
++**
++** IT-SECURITY LICENSE
++** Version 1.1, 12th of March 2016
++**
++** This framework may only be used within the IT-Security exercises 2016. Only
++** students that are formally registered within TUGRAZ-online may use it until
++** 30th of June 2016. After that date, licensees have the duty to safely
++** delete the software framework.
++**
++** This license does not grant you any rights to re-distribute the software,
++** to change the license, to grant access to other individuals, and to
++** commercially use the software.
++**
++** This software is distributed WITHOUT ANY WARRANTY; without even the implied
++** warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++**
++** If you are interested in a more reasonable license, please use the contact
++** information above.
++**
++******************************************************************************/
++
++#include "tls-ascon.h"
++#include "endian.h"
++#include "random.h"
++
++bool tls12_ascon::record::operator==(const record& other) const
++{
++  if (header.type != other.header.type)
++    return false;
++  if (header.version.major != other.header.version.major)
++    return false;
++  if (header.version.minor != other.header.version.minor)
++    return false;
++  if (header.length != other.header.length)
++    return false;
++  if (explicit_nonce != other.explicit_nonce)
++    return false;
++  return ciphertext == other.ciphertext;
++}
++
++bool tls12_ascon::record::operator!=(const record& other) const
++{
++  return !(*this == other);
++}
++
++tls12_ascon::tls12_ascon(const key_storage& key, const incrementing_nonce& nonce)
++{
++  // \todo initialize with given key
++}
++
++tls12_ascon::record tls12_ascon::encrypt(uint64_t sequence_number,
++                                         const std::vector<uint8_t>& plaintext)
++{
++  /// \todo Implement ciphertext record generation for given plaintext.
++  /// The nonce has to be incremented after an successful encryption.
++  return record();
++}
++
++bool tls12_ascon::decrypt(uint64_t sequence_number, const record& record,
++                          std::vector<uint8_t>& plaintext)
++{
++  /// \todo Implement decryption for the given record.
++  /// If decryption was successful return true, otherwise return false.
++  return false;
++}
+diff --git a/tls/tls-ascon.h b/tls/tls-ascon.h
+new file mode 100644
+index 0000000..fd30eb2
+--- /dev/null
++++ b/tls/tls-ascon.h
+@@ -0,0 +1,71 @@
++/******************************************************************************
++**
++** Copyright (C) 2016 Graz University of Technology
++**
++** Contact: itsec-team@iaik.tugraz.at
++**
++** IT-SECURITY LICENSE
++** Version 1.1, 12th of March 2016
++**
++** This framework may only be used within the IT-Security exercises 2016. Only
++** students that are formally registered within TUGRAZ-online may use it until
++** 30th of June 2016. After that date, licensees have the duty to safely
++** delete the software framework.
++**
++** This license does not grant you any rights to re-distribute the software,
++** to change the license, to grant access to other individuals, and to
++** commercially use the software.
++**
++** This software is distributed WITHOUT ANY WARRANTY; without even the implied
++** warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++**
++** If you are interested in a more reasonable license, please use the contact
++** information above.
++**
++******************************************************************************/
++
++#ifndef TLS_ASCON_H
++#define TLS_ASCON_H
++
++#include <array>
++#include <cstddef>
++#include <cstdint>
++#include <vector>
++
++#include "ascon128.h"
++#include "tls.h"
++#include "counter.h"
++
++/// Oracle simulating application data record encryption and decryption for
++/// TLS 1.2 using ASCON as cipher suite.
++class tls12_ascon
++{
++public:
++  typedef ascon128::key_storage key_storage;
++  typedef std::array<uint8_t, incrementing_nonce::explicit_size> nonce_storage;
++
++  /// TLSCipherText for a generic block cipher consisting of a type, version,
++  /// length, the explicit part of the nonce and the encrypted fragment.
++  struct record
++  {
++    record_layer_header header;      /// Record header
++    nonce_storage explicit_nonce;    /// Nonce
++    std::vector<uint8_t> ciphertext; /// Ciphertext fragment
++
++    bool operator==(const record& other) const;
++    bool operator!=(const record& other) const;
++  };
++
++  /// Instantiate with given Ascon key and nonce generator.
++  tls12_ascon(const key_storage& key, const incrementing_nonce& nonce);
++
++  /// Create an encrypted record for the given cipher text. If the optional iv is
++  /// given, it shall be used as IV, otherwise a random IV is generated.
++  record encrypt(uint64_t sequence_number, const std::vector<uint8_t>& plaintext);
++  /// Decrypt an encrypted record and store the data in plaintext if the record
++  /// can be decrypted and verified.
++  bool decrypt(uint64_t sequence_number, const record& record,
++                       std::vector<uint8_t>& plaintext);
++};
++
++#endif
+diff --git a/tls/tls.h b/tls/tls.h
+new file mode 100644
+index 0000000..c55cf43
+--- /dev/null
++++ b/tls/tls.h
+@@ -0,0 +1,43 @@
++#ifndef TLS_H
++#define TLS_H
++
++#include <array>
++#include <cstddef>
++#include <cstdint>
++#include <vector>
++
++/// TLS version constants
++enum version_constants : uint8_t
++{
++  TLSv1_2_MAJOR = 3,
++  TLSv1_2_MINOR = 3
++};
++
++/// TLS content type constants
++enum content_type : uint8_t
++{
++  TLS_APPLICATION_DATA = 23
++};
++
++/// The protocol version.
++struct protocol_version
++{
++  /// Major protocol version.
++  uint8_t major;
++  /// Minor protocol version.
++  uint8_t minor;
++} __attribute__((packed));
++
++/// The header of the record layer consisting of type, version and length.
++struct record_layer_header
++{
++  /// Record type
++  uint8_t type;
++  /// Protocol version
++  protocol_version version;
++  /// Size of the transmitted payload, e.g. the size of the IV plus the size of
++  /// the cipher text.
++  uint16_t length;
++} __attribute__((packed));
++
++#endif
+-- 
+2.7.4
+
